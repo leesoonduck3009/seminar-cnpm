@@ -1,0 +1,84 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Next.js build output
+/.next
+/out
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Miscellaneous
+.DS_Store
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono auto generated files
+mono_crash.*
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Include rider-related files
+.idea/
+.idea_modules/
+
+# Rider temporary files
+.idea/
+*.sln.iml
+
+# Rider run configurations
+/.idea/runConfigurations/
+
+# Rider solution files
+/.idea/workspace.xml
+
+# NuGet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+nuget.exe
+*.snupkg
+*.nupkg
+
+# ASP.NET Core specific
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# Entity Framework migrations
+migrations/
+
+# Publish Output
+*.publish.xml
+*.pubxml
+*.pubxml.user
