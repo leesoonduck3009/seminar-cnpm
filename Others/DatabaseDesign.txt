@@ -1,0 +1,59 @@
+Users{
+  "uid": "string", // ID người dùng (có thể là UID từ Firebase Authentication)
+  "displayName": "string",
+  "email": "string",
+  "avatarURL": "string",
+  "boards": ["boardId1", "boardId2", ...], // Danh sách ID các bảng mà người dùng tham gia
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+Boards
+{
+  "boardId": "string", // Tự động tạo ID hoặc UUID
+  "name": "string",
+  "description": "string",
+  "ownerId": "uid", // ID người tạo bảng
+  "members": ["uid1", "uid2", ...], // Danh sách ID người dùng tham gia
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+	List
+	{
+	  "listId": "string",
+	  "name": "string",
+	  "position": "number", // Vị trí sắp xếp trong bảng
+	  "createdAt": "timestamp",
+	  "updatedAt": "timestamp"
+	}
+		Cards{
+		  "cardId": "string",
+		  "title": "string",
+		  "description": "string",
+		  "assignedTo": ["uid1", "uid2", ...], // Danh sách người được giao
+		  "labels": ["label1", "label2", ...],
+		  "dueDate": "timestamp",
+		  "position": "number", // Vị trí sắp xếp trong danh sách
+		  "attachments": ["attachmentId1", "attachmentId2", ...],
+		  "comments": ["commentId1", "commentId2", ...],
+		  "createdAt": "timestamp",
+		  "updatedAt": "timestamp"
+		}
+			Comments{
+			  "commentId": "string",
+			  "authorId": "uid",
+			  "content": "string",
+			  "createdAt": "timestamp",
+			  "updatedAt": "timestamp"
+			}
+				Attachment{
+				  "attachmentId": "string",
+				  "fileName": "string",
+				  "fileURL": "string",
+				  "uploadedBy": "uid",
+				  "uploadedAt": "timestamp"
+				}
+Users ↔ Boards: Một người dùng có thể tham gia nhiều bảng, và mỗi bảng có nhiều thành viên.
+Boards ↔ Lists: Mỗi bảng chứa nhiều danh sách.
+Lists ↔ Cards: Mỗi danh sách chứa nhiều thẻ công việc.
+Cards ↔ Comments/Attachments: Mỗi thẻ công việc có thể có nhiều bình luận và tệp đính kèm.
+				
