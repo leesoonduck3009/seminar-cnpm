@@ -18,7 +18,6 @@ export const createNewUser = async (
     createdAt: new Date(),
   };
   await db.collection("users").doc(newUser.id).set(newUser);
-  console.log(process.env.TEST);
   return newUser;
 };
 export const getAllUser = async (): Promise<User[]> => {
