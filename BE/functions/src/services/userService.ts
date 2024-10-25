@@ -3,8 +3,11 @@ import { Firestore } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
 import dotenv from "dotenv";
 import * as mailService from "./mailService";
-import { OTPCheck } from "../models/otpCheck";
+import { OTPCheckRegister } from "../models/otpCheck";
 import { OptCheckRequest } from "../models/dto/OtpCheckRequestDto";
+import { UserRegisterDetail } from "../models/dto/User/userRegisteDetailDto";
+import { UserRecord } from "firebase-admin/auth";
+import { UserRegisterResponseDto } from "../models/dto/User/userRegisterResponseDto";
 dotenv.config();
 const db = new Firestore();
 export const createNewUser = async (
@@ -57,28 +60,29 @@ export const SendLinkLoginUserToEmail = async (
 };
 export const SendOTPCheckingEmail = async (email: string): Promise<string> => {
   const OTP = generateOTP();
-  const oTPCheck = new OTPCheck(OTP, email);
-  await mailService.sendMailOTP(email, OTP);
-  const Object = await admin
+  const oTPCheck = new OTPCheckRegister(OTP, email);
+  //await mailService.sendMailOTP(email, OTP);
+  await admin
     .firestore()
-    .collection(OTPCheck.name)
-    .add(oTPCheck.toJson());
-  return Object.id;
+    .collection(OTPCheckRegister.name)
+    .doc(email)
+    .set(oTPCheck.toJson());
+  return email;
 };
-export const CheckOTP = async (request: OptCheckRequest): Promise<boolean> => {
+export const CheckOTPRegister = async (
+  request: OptCheckRequest
+): Promise<string> => {
   const doc = await admin
     .firestore()
-    .collection(OTPCheck.name)
-    .doc(request.id)
+    .collection(OTPCheckRegister.name)
+    .doc(request.email)
     .get();
   const dataResponse = doc.data();
   if (!dataResponse) {
-    return false; // Nếu không tìm thấy OTP, trả về false
+    throw new Error("OTP not correct"); // Nếu không tìm thấy OTP, trả về false
   }
   // Chuyển dữ liệu từ Firestore về dạng OTPCheck
-  const otpCheck = OTPCheck.fromJson(dataResponse);
-  console.log(otpCheck);
-  debugger;
+  const otpCheck = OTPCheckRegister.fromJson(dataResponse);
   // Kiểm tra mã OTP đã hết hạn chưa
   if (otpCheck.isExpired()) {
     console.log("Mã OTP đã hết hạn.");
@@ -99,20 +103,32 @@ export const CheckOTP = async (request: OptCheckRequest): Promise<boolean> => {
   if (otpCheck.OtpCode !== request.OtpCode) {
     otpCheck.incrementAttempts(); // Tăng số lần thử
     // Cập nhật lại số lần thử vào Firestore
-    await admin.firestore().collection(OTPCheck.name).doc(request.id).update({
-      Attempts: otpCheck.Attempts,
-    });
+    await admin
+      .firestore()
+      .collection(OTPCheckRegister.name)
+      .doc(request.email)
+      .update({
+        Attempts: otpCheck.Attempts,
+      });
     console.log("Mã OTP không đúng.");
     throw new Error("Otp code is not correct");
   }
   // Nếu mã OTP chính xác, đánh dấu là đã sử dụng
   otpCheck.useOTP();
-  await admin.firestore().collection(OTPCheck.name).doc(request.id).update({
-    IsUsed: otpCheck.IsUsed,
+  await admin
+    .firestore()
+    .collection(OTPCheckRegister.name)
+    .doc(request.email)
+    .update({
+      IsUsed: otpCheck.IsUsed,
+    });
+  // Tạo tài khoản người dùng
+  const userRecord = await admin.auth().createUser({
+    email: request.email,
+    emailVerified: true,
   });
-
   console.log("Mã OTP hợp lệ.");
-  return true;
+  return userRecord.uid;
 };
 function generateOTP(length: number = 6): string {
   let otp: string = "";
@@ -121,3 +137,16 @@ function generateOTP(length: number = 6): string {
   }
   return otp;
 }
+export const CreateNewUser = async (
+  request: UserRegisterDetail
+): Promise<UserRegisterResponseDto> => {
+  const userRecord = await admin.auth().getUser(request.uid);
+  if (userRecord === null) {
+    throw new Error("Not found");
+  }
+  const user = await admin.auth().updateUser(request.uid, {
+    password: request.password,
+    displayName: request.displayName,
+  });
+  return new UserRegisterResponseDto(user.uid, user.email!, user.displayName!);
+};

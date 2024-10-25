@@ -1,8 +1,8 @@
 export class OptCheckRequest {
-  id: string;
+  email: string;
   OtpCode: string;
-  constructor(id: string, OtpCode: string) {
-    this.id = id;
+  constructor(email: string, OtpCode: string) {
+    this.email = email;
     this.OtpCode = OtpCode;
   }
 }
