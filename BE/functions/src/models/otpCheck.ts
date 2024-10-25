@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 
-export class OTPCheck {
+export class OTPCheckRegister {
   OtpCode: string;
   ExpiredTime: Date;
   CreatedAt: Date;
@@ -52,8 +52,8 @@ export class OTPCheck {
       IsUsed: this.IsUsed,
     };
   }
-  static fromJson(data: any): OTPCheck {
-    const otpCheck = new OTPCheck(data.OtpCode, data.Email);
+  static fromJson(data: any): OTPCheckRegister {
+    const otpCheck = new OTPCheckRegister(data.OtpCode, data.Email);
     otpCheck.CreatedAt =
       data.CreatedAt instanceof Timestamp
         ? data.CreatedAt.toDate()

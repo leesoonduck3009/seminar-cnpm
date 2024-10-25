@@ -3,6 +3,7 @@ import * as userService from "../services/userService";
 import { User } from "../models/user";
 import { ApiResponse } from "../models/dto/ApiResponse";
 import { OptCheckRequest } from "../models/dto/OtpCheckRequestDto";
+import { UserRegisterDetail } from "../models/dto/User/userRegisteDetailDto";
 // import { ApiResponse } from "../models/dto/ApiResponse";
 // import { StatusCode } from "../enums/StatusCode";
 // import { UserLoginRequestDto } from "../models/dto/User/userLoginRequestDto";
@@ -63,9 +64,27 @@ export const SendOTPCodeToUser = async (req: Request, res: Response) => {
 };
 export const CheckOtpCode = async (req: Request, res: Response) => {
   try {
+    console.log(`body: ${req.body}`);
     const request = req.body as OptCheckRequest;
     const response = new ApiResponse(
-      await userService.CheckOTP(request),
+      await userService.CheckOTPRegister(request),
+      true,
+      null,
+      200
+    );
+    res.status(200).json(response);
+  } catch (e) {
+    const errorMessage =
+      e instanceof Error ? e.message : "An unexpected error occurred";
+    const response = new ApiResponse(await null, false, errorMessage, 500);
+    res.status(500).json(response);
+  }
+};
+export const CreateUserAccount = async (req: Request, res: Response) => {
+  try {
+    const request = req.body as UserRegisterDetail;
+    const response = new ApiResponse(
+      await userService.CreateNewUser(request),
       true,
       null,
       200

@@ -1,0 +1,55 @@
+Function task in application:
+Auth:
+	Register:
+		- Register user:
+			+ Enter email to register.
+		- Send OTP to verify mail.
+		- Check OTP to verify mail.
+		- Create User With that email.
+			+ Create user with email, password, username, displayName,...
+	Login:
+		- Login by username and password
+		- Login by link request.
+	Logout:
+		- Logout account
+UserProfile:
+	Update profile
+	Get Profile 
+Board: 
+	Create Board
+	Get All Board User Join
+	Get Board By Id
+	Update Board:
+		- Set information for board
+		- Assign people to board
+		- Set rule for board
+	Delete Board
+List:
+	Create List
+	Get All list in board: Include Task in board
+	Get List Detail:
+	Update List: 
+		- Update list name
+		- Change posistion
+	Delete List
+Card:
+	Create card: 
+	Get Card by id. also get all comment 
+	Update card:
+		- Change the main list of card
+		- Assign people to card
+		- Update card information
+		- Assign label to card
+	Delete Card.
+Comments:
+	Create Comment
+	Update Comment:
+Attachment:
+	Create attachment:
+	Update attachment:
+	Delete attachment:
+
+		
+	
+		
+	
