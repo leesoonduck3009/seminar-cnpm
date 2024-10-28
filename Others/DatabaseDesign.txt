@@ -13,7 +13,7 @@ Boards
   "name": "string",
   "description": "string",
   "ownerId": "uid", // ID người tạo bảng
-  "members": ["uid1", "uid2", ...], // Danh sách ID người dùng tham gia
+  "members": ["uid1", "uid2	", ...], // Danh sách ID người dùng tham gia
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }

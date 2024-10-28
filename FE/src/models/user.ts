@@ -1,47 +1,45 @@
 export class User {
+  id: string; // ID người dùng (có thể là UID từ Firebase Authentication)
   displayName: string;
-  fullName: string;
   email: string;
-  gender: GenderType;
-  avatarUrl: string;
-  createAt: Date;
+  avatarURL: string;
+  boards: string[];
+  createdAt: Date;
   constructor(
+    id: string, // ID người dùng (có thể là UID từ Firebase Authentication)
     displayName: string,
-    fullName: string,
     email: string,
-    gender: GenderType,
-    avatarUrl: string
+    avatarURL: string,
+    boards: string[]
   ) {
+    this.id = id;
     this.displayName = displayName;
-    this.fullName = fullName;
+    this.avatarURL = avatarURL;
     this.email = email;
-    this.gender = gender;
-    this.createAt = new Date();
-    this.avatarUrl = avatarUrl;
+    this.boards = boards;
+    this.createdAt = new Date();
   }
   toJson() {
     return {
       displayName: this.displayName,
-      fullName: this.fullName,
+      avatarURL: this.avatarURL,
       email: this.email,
-      gender: this.gender,
-      createAt: this.createAt,
-      avatarUrl: this.avatarUrl,
+      createdAt: this.createdAt,
+      boards: this.boards,
     };
   }
   static fromJson(data: any): User {
     const user = new User(
+      data.id,
       data.displayName,
-      data.fullName,
+      data.avatarURL,
       data.email,
-      data.gender,
-      data.avatarUrl
+      data.boards
     );
 
     // Nếu createAt là chuỗi ISO, chuyển thành đối tượng Date
-    user.createAt =
-      data.createAt instanceof Date ? data.createAt : new Date(data.createAt);
-
+    user.createdAt =
+      data.createdAt instanceof Date ? data.createAt : new Date(data.createAt);
     return user;
   }
 }

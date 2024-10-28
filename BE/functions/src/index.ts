@@ -8,11 +8,11 @@
  */
 import admin = require("firebase-admin");
 import * as v2 from "firebase-functions/v2";
-
+import * as AuthReactionService from "./services/reactionService/authReactionService";
 import app from "./app";
 exports.User = v2.https.onRequest(app);
+exports.CreateUser = AuthReactionService.OnCreateUser;
 admin.initializeApp();
-
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 

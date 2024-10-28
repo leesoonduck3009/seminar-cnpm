@@ -6,7 +6,6 @@ import * as mailService from "./mailService";
 import { OTPCheckRegister } from "../models/otpCheck";
 import { OptCheckRequest } from "../models/dto/OtpCheckRequestDto";
 import { UserRegisterDetail } from "../models/dto/User/userRegisteDetailDto";
-import { UserRecord } from "firebase-admin/auth";
 import { UserRegisterResponseDto } from "../models/dto/User/userRegisterResponseDto";
 dotenv.config();
 const db = new Firestore();
@@ -140,13 +139,18 @@ function generateOTP(length: number = 6): string {
 export const CreateNewUser = async (
   request: UserRegisterDetail
 ): Promise<UserRegisterResponseDto> => {
-  const userRecord = await admin.auth().getUser(request.uid);
-  if (userRecord === null) {
-    throw new Error("Not found");
-  }
   const user = await admin.auth().updateUser(request.uid, {
     password: request.password,
     displayName: request.displayName,
   });
+
+  // Cập nhật displayName cho Firestore
+  await admin.firestore().collection(User.name).doc(request.uid).set(
+    {
+      displayName: request.displayName,
+    },
+    { merge: true }
+  ); // Sử dụng merge để chỉ cập nhật displayName mà không ghi đè toàn bộ document
+
   return new UserRegisterResponseDto(user.uid, user.email!, user.displayName!);
 };
