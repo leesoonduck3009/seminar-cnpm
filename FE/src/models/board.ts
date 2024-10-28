@@ -6,7 +6,7 @@ export class Board {
   members: string[]; // Danh sách ID người dùng tham gia (uid)
   createdAt: Date;
   updatedAt: Date;
-
+  isDeleted: boolean;
   constructor(
     id: string,
     name: string,
@@ -23,6 +23,7 @@ export class Board {
     this.members = members;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.isDeleted = false;
   }
 
   toJson(): object {
@@ -33,6 +34,7 @@ export class Board {
       members: this.members,
       createdAt: this.createdAt.toISOString(), // Đảm bảo chuẩn hóa thời gian thành chuỗi ISO
       updatedAt: this.updatedAt.toISOString(),
+      isDeleted: this.isDeleted,
     };
   }
 
@@ -49,5 +51,21 @@ export class Board {
         : new Date(data.createdAt), // Chuyển đổi thành Date nếu là chuỗi
       data.updatedAt instanceof Date ? data.updatedAt : new Date(data.updatedAt) // Chuyển đổi thành Date nếu là chuỗi
     );
+  }
+}
+export class UpdateInformationBoard {
+  id: string;
+  name: string;
+  description: string;
+  constructor(id: string, name: string, description: string) {
+    this.name = name;
+    this.description = description;
+    this.id = id;
+  }
+  toJson(): object {
+    return {
+      name: this.name,
+      description: this.description,
+    };
   }
 }
