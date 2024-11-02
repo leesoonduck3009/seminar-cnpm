@@ -25,7 +25,8 @@ export const CreateBoard = async (board: Board): Promise<Board> => {
   const boardRef = await addDoc(BoardCollectionRef, board);
   const userDoc = doc(db, User.name, currentUser.uid);
   await updateDoc(userDoc, { boards: arrayUnion(boardRef.id) });
-  throw new Error("Not implement");
+  board.id = boardRef.id;
+  return board;
 };
 
 // Get
