@@ -43,7 +43,7 @@ export const RegisterCreateUser = async (
   return result.data;
 };
 // Người dùng đăng nhập
-export const Login = async (email: string, password: string): Promise<User> => {
+export const Login = async (email: string, password: string): Promise<any> => {
   try {
     const userCredential = await signInWithEmailAndPassword(
       firebase.auth,
@@ -53,9 +53,11 @@ export const Login = async (email: string, password: string): Promise<User> => {
     const user = userCredential.user;
     console.log("User signed in successfully:", user);
     return user;
-  } catch (error) {
-    console.error("Error signing in:", error);
-    throw error;
+  } catch (error: any) {
+    // Log chi tiết mã lỗi và thông báo lỗi
+    console.error("Error signing in:");
+    console.error(`Code: ${error.code}`);
+    console.error(`Message: ${error.message}`);
   }
 };
 export const LoginByLinkRequest = async (email: string) => {

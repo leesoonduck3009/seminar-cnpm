@@ -1,3 +1,4 @@
+import { Login } from "@/services/authService";
 import { HttpService } from "@/services/httpService";
 import { NextResponse } from "next/server";
 
@@ -9,7 +10,8 @@ export async function GET() {
 }
 export async function POST(req: Request) {
   const body = await req.json();
-  return NextResponse.json({ message: "Data received", data: body });
+  const user = await Login(body.email, body.password);
+  return NextResponse.json({ message: "Data received", data: user });
 }
 // export default function handler(req: NextApiRequest, res: NextApiResponse) {
 //   const { method } = req;
