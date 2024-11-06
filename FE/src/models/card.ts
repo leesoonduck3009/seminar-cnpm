@@ -10,7 +10,6 @@ export class Card {
   comments: string[]; // Danh sách ID các bình luận (commentId)
   createdAt: Date;
   updatedAt: Date;
-
   constructor(
     id: string,
     title: string,
@@ -22,7 +21,7 @@ export class Card {
     attachments: string[],
     comments: string[],
     createdAt: Date = new Date(), // Mặc định là thời gian hiện tại
-    updatedAt: Date = new Date() // Mặc định là thời gian hiện tại
+    updatedAt: Date = new Date()
   ) {
     this.id = id;
     this.title = title;
@@ -68,7 +67,7 @@ export class Card {
       data.createdAt instanceof Date
         ? data.createdAt
         : new Date(data.createdAt), // Chuyển thành Date nếu là chuỗi
-      data.updatedAt instanceof Date ? data.updatedAt : new Date(data.updatedAt) // Chuyển thành Date nếu là chuỗi
+      data.updatedAt instanceof Date ? data.updatedAt : new Date(data.updatedAt)
     );
   }
 }

@@ -21,6 +21,7 @@ export const CreateBoard = async (board: Board): Promise<Board> => {
     throw new Error("Unauthorize");
   }
   board.ownerId = currentUser.uid;
+  board.members = [currentUser.uid];
   const BoardCollectionRef = collection(db, Board.name);
   const boardRef = await addDoc(BoardCollectionRef, board);
   const userDoc = doc(db, User.name, currentUser.uid);

@@ -51,7 +51,6 @@ export const Login = async (email: string, password: string): Promise<any> => {
       password
     );
     const user = userCredential.user;
-    console.log("User signed in successfully:", user);
     return user;
   } catch (error: any) {
     // Log chi tiết mã lỗi và thông báo lỗi

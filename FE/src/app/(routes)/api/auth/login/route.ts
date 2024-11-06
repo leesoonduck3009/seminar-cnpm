@@ -9,9 +9,13 @@ export async function GET() {
   return NextResponse.json({ message: "Hello from Next.js!" });
 }
 export async function POST(req: Request) {
-  const body = await req.json();
-  const user = await Login(body.email, body.password);
-  return NextResponse.json({ message: "Data received", data: user });
+  try {
+    const body = await req.json();
+    const user = await Login(body.email, body.password);
+    return NextResponse.json({ message: "Data received", data: user });
+  } catch (e) {
+    return NextResponse.json({ message: "Data received", data: e });
+  }
 }
 // export default function handler(req: NextApiRequest, res: NextApiResponse) {
 //   const { method } = req;

@@ -148,6 +148,7 @@ export const CreateNewUser = async (
   await admin.firestore().collection(User.name).doc(request.uid).set(
     {
       displayName: request.displayName,
+      boards: [],
     },
     { merge: true }
   ); // Sử dụng merge để chỉ cập nhật displayName mà không ghi đè toàn bộ document
