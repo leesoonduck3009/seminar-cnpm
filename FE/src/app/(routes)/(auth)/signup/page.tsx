@@ -1,8 +1,27 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useState } from "react";
 
 const SignUpPage = () => {
+  const [emailError, setEmailError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleEmailChange = (event) => {
+    const email = event.target.value;
+    if (!isValidEmail(email)) {
+      setEmailError(true);
+      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ.");
+    } else {
+      setEmailError(false);
+      setErrorMessage("");
+    }
+  };
+
+  function isValidEmail(email) {
+    return email.includes("@");
+  }
   return (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
@@ -27,17 +46,26 @@ const SignUpPage = () => {
           Đăng ký để tiếp tục
         </h1>
         <Input
-          className="border mb-3 border-[#B6c2cf]"
+          className={`border mb-3 border-[#B6c2cf] ${
+            emailError ? "border-red-500" : ""
+          }`}
           placeholder="Nhập email của bạn"
+          onChange={handleEmailChange}
         />
+        {emailError && (
+          <div className="text-red-500 text-sm mt-1">{errorMessage}</div>
+        )}
         <p className="text-[12px]">
           Bằng việc đăng ký, tôi chấp nhận Điều khoản dịch vụ của Atlassian
           Cloud và công nhận Chính sách quyền riêng tư.
         </p>
 
-        <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
-          Đăng ký
-        </Button>
+        <a href="/signup-otp" className="w-full">
+          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
+            Đăng ký
+          </Button>
+        </a>
+
         <p className="font-semibold text-[13px] text-[#626262]">
           Hoặc tiếp tục với
         </p>

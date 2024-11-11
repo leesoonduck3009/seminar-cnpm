@@ -30,9 +30,12 @@ const LogInPage = () => {
           className="border mb-3 border-[#B6c2cf]"
           placeholder="Nhập email của bạn"
         />
-        <Button className="bg-[#0052CC] mb-5 w-full font-semibold">
-          Tiếp tục
-        </Button>
+        <a href="/login-confirmmail" className="w-full">
+          <Button className="bg-[#0052CC] mb-5 w-full font-semibold">
+            Tiếp tục
+          </Button>
+        </a>
+
         <p className="font-semibold text-[13px] text-[#626262]">
           Hoặc tiếp tục với
         </p>
