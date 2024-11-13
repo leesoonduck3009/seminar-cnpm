@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,9 @@ import SideBar from "@/components/home/SideBar";
 import Column from "@/components/home/ColumnComponent";
 import BoardHeader from "@/components/home/BoardHeader";
 import { StrictModeDroppable } from "./StrictModeDroppable";
+import { useRouter } from "next/navigation";
+import { auth } from "@/helpers/firebase";
+import { User } from "firebase/auth";
 
 const HomePage = () => {
   const [columns, setColumns] = useState({
@@ -39,6 +42,26 @@ const HomePage = () => {
   const [newColumnTitle, setNewColumnTitle] = useState("");
   const [isAddingColumn, setIsAddingColumn] = useState(false);
 
+  const [authUser, setAuthUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  useEffect(() => {
+    // Giả sử bạn có Firebase Auth hoặc logic kiểm tra đăng nhập
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setAuthUser(user);
+      setIsLoading(false);
+      console.log("User", user);
+    });
+
+    // Cleanup subscription khi component unmount
+    return () => unsubscribe();
+  }, []);
+  useEffect(() => {
+    if (!isLoading && !authUser) {
+      // Nếu người dùng đã đăng nhập, điều hướng tới trang profile
+      router.push("/login");
+    }
+  }, [authUser, isLoading, router]);
   const onDragEnd = (result) => {
     const { destination, source, draggableId, type } = result;
 
@@ -176,7 +199,7 @@ const HomePage = () => {
     setColumnOrder(columnOrder.filter((id) => id !== columnId));
   };
 
-  return (
+  return authUser ? (
     <div className="min-h-screen bg-pink-100">
       <HeaderHome />
       <div className="flex flex-col lg:flex-row">
@@ -245,7 +268,7 @@ const HomePage = () => {
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default HomePage;

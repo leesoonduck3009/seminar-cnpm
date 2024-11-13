@@ -2,6 +2,7 @@ import express = require("express");
 import { Request, Response, NextFunction } from "express";
 import userRoute from "./routes/userRoute";
 import cors from "cors";
+import { GlobalExceptionMiddleware } from "./middlewares/globalExceptionMiddleware";
 
 var app = express();
 
@@ -25,9 +26,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Middleware xử lý lỗi chung
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Internal Server Error" });
-});
+app.use(GlobalExceptionMiddleware);
 
 export default app;

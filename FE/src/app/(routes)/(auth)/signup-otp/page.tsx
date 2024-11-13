@@ -6,10 +6,23 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { OptCheckRequest } from "@/models/auths/auth";
+import { RegisterUserCheckOtp } from "@/services/authService";
 import * as React from "react";
 
 const page = () => {
   const [value, setValue] = React.useState("");
+  const handleOtpCheckClick = async () => {
+    const email = localStorage.getItem("email");
+    const request: OptCheckRequest = new OptCheckRequest(email!, value);
+    const response = await RegisterUserCheckOtp(request);
+    console.log(response);
+    if (response.isSuccess) {
+      window.location.href = "/signup-pass";
+    } else {
+      alert(response.errorMessage);
+    }
+  };
   return (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
@@ -56,11 +69,12 @@ const page = () => {
             )}
           </div>
         </div>
-        <a href="/signup-pass" className="w-full">
-          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
-            Tiếp tục
-          </Button>
-        </a>
+        <Button
+          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
+          onClick={handleOtpCheckClick}
+        >
+          Tiếp tục
+        </Button>
       </div>
     </div>
   );

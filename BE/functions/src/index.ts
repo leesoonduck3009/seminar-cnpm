@@ -10,8 +10,14 @@ import admin = require("firebase-admin");
 import * as v2 from "firebase-functions/v2";
 import * as AuthReactionService from "./services/reactionService/authReactionService";
 import app from "./app";
+import {
+  CreateNewPasswordUser,
+  CreateNewUserDetail,
+} from "./services/userService";
 exports.User = v2.https.onRequest(app);
-exports.CreateUser = AuthReactionService.OnCreateUser;
+exports.CreateUserReaction = AuthReactionService.OnCreateUser;
+exports.CreatePasswordUser = v2.https.onCall(CreateNewPasswordUser);
+exports.CreateUserDetail = v2.https.onCall(CreateNewUserDetail);
 admin.initializeApp();
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

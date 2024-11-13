@@ -1,8 +1,25 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { auth } from "@/helpers/firebase";
+import { RegisterUserCreateDetail } from "@/services/authService";
 import React from "react";
 
 const page = () => {
+  const [displayName, setDisplayName] = React.useState(""); // Thêm state displayName
+  const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayName(e.target.value);
+  };
+
+  const createAccountClick = async () => {
+    // Gọi hàm tạo tài khoản với displayName
+    try {
+      const response = await RegisterUserCreateDetail(displayName);
+      window.location.href = "/create-first-team";
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
   return (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
@@ -27,20 +44,23 @@ const page = () => {
           Vui lòng nhập thông tin cá nhân
         </h1>
         <div className="flex flex-col w-full">
-          <p className="font-semibold text-[14px] mb-2">Email</p>
-          <Input className="border mb-4 border-[#B6c2cf]" placeholder="Email" />
+          {/* <p className="font-semibold text-[14px] mb-2">Email</p>
+          <Input className="border mb-4 border-[#B6c2cf]" placeholder="Email" /> */}
           <p className="font-semibold text-[14px] mb-2">Tên hiển thị</p>
           <Input
             className="border mb-3 border-[#B6c2cf]"
             placeholder="Nhập tên hiển thị"
+            value={displayName}
+            onChange={handleDisplayNameChange}
           />
         </div>
 
-        <a href="/home" className="w-full">
-          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
-            Khám phá ngay thôi
-          </Button>
-        </a>
+        <Button
+          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
+          onClick={createAccountClick}
+        >
+          Khám phá ngay thôi
+        </Button>
       </div>
     </div>
   );
