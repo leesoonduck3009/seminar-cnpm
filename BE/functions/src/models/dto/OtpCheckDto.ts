@@ -6,3 +6,11 @@ export class OptCheckRequest {
     this.OtpCode = OtpCode;
   }
 }
+export class OptCheckResponse {
+  uid: string;
+  token: string;
+  constructor(uid: string, token: string) {
+    this.uid = uid;
+    this.token = token;
+  }
+}
