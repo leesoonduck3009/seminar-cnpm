@@ -26,7 +26,9 @@ const page = () => {
               className="border border-[#B6c2cf]"
               placeholder="Ví dụ: Bảng của tôi"
             />
-            <Button className="bg-[#579DFF] mt-5 font-semibold">Sau</Button>
+            <a href="/create-first-team">
+              <Button className="bg-[#579DFF] mt-5 font-semibold">Sau</Button>
+            </a>
           </div>
         </div>
         <div className="col-span-3 flex justify-center items-center bg-[#1D2632]">
