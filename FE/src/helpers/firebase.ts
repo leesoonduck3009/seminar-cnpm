@@ -1,9 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-import dotenv from "dotenv";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
-dotenv.config();
 const firebaseConfig = {
   apiKey: "AIzaSyCf60mBDlRMqdcnHYcFHN6_O-idjQR4ZwE",
   authDomain: "project-management-f27b0.firebaseapp.com",

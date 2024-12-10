@@ -1,6 +1,5 @@
-// app/boards/page.js
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { PlusIcon, Search, Star } from "lucide-react";
 import {
@@ -14,24 +13,76 @@ import HeaderHome from "@/components/home/HeaderHome";
 import SideBar from "@/components/home/SideBar";
 import CreateBoardModal from "@/components/board/CreateBoardModal";
 import { useRouter } from "next/navigation";
-import { useBoards } from "@/contexts/BoardContext";
+import useBoardStore from "@/store/useBoardStore";
+import type { Board } from "@/types/board";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BoardsPage = () => {
   const router = useRouter();
-  const { boards, addBoard, toggleBoardStar } = useBoards();
+  const { toast } = useToast();
+  const { boards, addBoard, updateBoard } = useBoardStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"recent" | "name">("recent");
+  const { currentUser, loading } = useAuth();
 
-  const handleCreateBoard = async (boardData) => {
-    const newBoard = addBoard(boardData);
-    router.push(`/board/${newBoard.id}`);
+  React.useEffect(() => {
+    if (!currentUser) {
+      router.push("/login");
+    }
+  }, [currentUser, router]);
+  const handleCreateBoard = async (boardData: Partial<Board>) => {
+    try {
+      // addBoard returns the new board immediately
+      const newBoard = addBoard(boardData);
+      // Wait for the next tick to ensure store is updated
+      await Promise.resolve();
+
+      // Navigate to the new board
+      router.push(`/board/${newBoard.id}`);
+
+      // Return the new board to satisfy the type
+      return newBoard;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create board",
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
-  const filteredBoards = boards.filter((board) =>
-    board.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleToggleStar = (boardId: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const board = boards.find((b) => b.id === boardId);
+    if (board) {
+      updateBoard(boardId, { starred: !board.starred });
+    }
+  };
 
-  return (
+  const filteredBoards = React.useMemo(() => {
+    let filtered = boards.filter((board) =>
+      board.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    if (sortBy === "name") {
+      filtered.sort((a, b) => a.title.localeCompare(b.title));
+    } else {
+      filtered.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+    }
+
+    return filtered;
+  }, [boards, searchQuery, sortBy]);
+
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-pink-100">
       <HeaderHome />
       <div className="flex flex-col lg:flex-row">
@@ -41,7 +92,10 @@ const BoardsPage = () => {
 
           <div className="flex gap-4 mb-6">
             <div className="flex-1">
-              <Select defaultValue="recent">
+              <Select
+                defaultValue="recent"
+                onValueChange={(value: "recent" | "name") => setSortBy(value)}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sắp xếp theo" />
                 </SelectTrigger>
@@ -82,7 +136,7 @@ const BoardsPage = () => {
                 style={
                   board.backgroundImage
                     ? {
-                        backgroundImage: board.backgroundImage,
+                        backgroundImage: `url(${board.backgroundImage})`,
                         backgroundSize: "cover",
                       }
                     : {}
@@ -93,11 +147,7 @@ const BoardsPage = () => {
                     <h3 className="text-white font-medium">{board.title}</h3>
                   </div>
                   <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleBoardStar(board.id);
-                    }}
+                    onClick={(e) => handleToggleStar(board.id, e)}
                     className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Star

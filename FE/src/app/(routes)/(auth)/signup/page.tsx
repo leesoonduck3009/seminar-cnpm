@@ -2,50 +2,47 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RegisterUserSendOtp } from "@/services/authService";
+import {
+  RegisterUserCheckOtp,
+  RegisterUserSendOtp,
+} from "@/services/authService";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-
+import { useAuth } from "@/contexts/AuthContext";
 const SignUpPage = () => {
+  const { currentUser, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/boards");
+    }
+  }, [currentUser, router]);
   const [emailError, setEmailError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [email, setEmail] = useState("");
-  const [enableContinue, setEnableContinue] = useState(false);
-  const router = useRouter();
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const email = event.target.value;
-    setEmail(email);
-    // Call API
-    if (isValidEmail(email)) {
-      setEnableContinue(true);
-    }
-  };
-  const handleSignUpSendOtpClick = async () => {
-    if (!enableContinue) {
-      setEnableContinue(false);
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+    if (!isValidEmail(email)) {
       setEmailError(true);
       setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ.");
-      return;
-    }
-    setEmailError(false);
-    setErrorMessage("");
-    const response = await RegisterUserSendOtp(email);
-    console.log(response);
-    if (response.isSuccess) {
-      // Redirect to OTP page
-      localStorage.setItem("email", email);
-      router.push("/signup-otp");
     } else {
-      setEmailError(true);
-      setErrorMessage(response.errorMessage!);
+      setEmailError(false);
+      setErrorMessage("");
     }
   };
-  function isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const signUpHandler = async () => {
+    // Call API to sign up
+    if (emailError) return;
+    await RegisterUserSendOtp(email);
+    router.push("/signup-otp");
+  };
+  function isValidEmail(email: string) {
+    return email.includes("@");
   }
-  return (
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
         <svg
@@ -73,6 +70,7 @@ const SignUpPage = () => {
             emailError ? "border-red-500" : ""
           }`}
           placeholder="Nhập email của bạn"
+          value={email}
           onChange={handleEmailChange}
         />
         {emailError && (
@@ -85,11 +83,10 @@ const SignUpPage = () => {
 
         <Button
           className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
-          onClick={handleSignUpSendOtpClick}
+          onClick={signUpHandler}
         >
           Đăng ký
         </Button>
-
         <p className="font-semibold text-[13px] text-[#626262]">
           Hoặc tiếp tục với
         </p>

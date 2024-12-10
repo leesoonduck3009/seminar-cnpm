@@ -9,7 +9,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 export const sendLoginEmail = async (email: string, url: string) => {
-  debugger;
   try {
     await transporter.sendMail({
       from: `"Taskly Support Team " <${process.env.EMAIL}>`,
@@ -108,21 +107,26 @@ export const sendMailOTP = async (email: string, OTP: string) => {
     to: email,
     subject: "This is your OTP Code",
     html:
-      '<div style="font-family: Helvetica,Arial,sans-serif; min-width:1000px; overflow:auto; line-height:2">\n' +
-      '  <div style="margin:50px auto; width:70%; padding:20px 0">\n' +
-      '    <div style="border-bottom:1px solid #eee">\n' +
-      '      <a href="" style="font-size:1.4em; color: linear-gradient(0deg, #D69BEA, #77BAFB); text-decoration:none; font-weight:600">Pixel Post</a>\n' +
-      "    </div>\n" +
-      '    <p style="font-size:1.1em">Xin chào,</p>\n' +
-      "    <p>Đây là thư tự động gửi vào email. Vui lòng không trả lời thư này.<br> Dưới đây là mã OTP của bạn!</p>\n" +
-      '    <h2 style="background: linear-gradient(0deg, #D69BEA, #77BAFB); margin: 0 auto; width: max-content; padding: 0 10px; color: #fff; border-radius: 4px;">' +
-      OTP +
-      "</h2>\n" +
-      '    <p style="font-size:0.9em;">Xin cảm ơn,<br />Pixel Post</p>\n' +
-      '    <hr style="border:none; border-top:1px solid #eee" />\n' +
-      '    <div style="float:right; padding:8px 0; color:#aaa; font-size:0.8em; line-height:1; font-weight:300">\n' +
-      "    </div>\n" +
-      "  </div>\n" +
+      '<div style="font-family: Helvetica, Arial, sans-serif; ' +
+      'min-width: 1000px; overflow: auto; line-height: 2">' +
+      '  <div style="margin: 50px auto; width: 70%; padding: 20px 0">' +
+      '    <div style="border-bottom: 1px solid #eee">' +
+      '      <a href="" style="font-size: 1.4em; color: #007BFF; text-decoration: none; ' +
+      ' font-weight: 600">Taskly</a>' +
+      "    </div>" +
+      '    <p style="font-size: 1.1em">Xin chào,</p>' +
+      "    <p>Đây là thư tự động gửi vào email. " +
+      "Vui lòng không trả lời thư này.<br> Dưới đây là mã OTP của bạn!</p>" +
+      '    <h2 style="background: #007BFF; margin: 0 auto; width: max-content; ' +
+      'padding: 0 10px; color: #fff; border-radius: 4px;">' +
+      `      ${OTP}` +
+      "    </h2>" +
+      '    <p style="font-size: 0.9em;">Xin cảm ơn,<br />Taskly</p>' +
+      '    <hr style="border: none; border-top: 1px solid #eee" />' +
+      '    <div style="float: right; padding: 8px 0; color: #aaa; font-size: 0.8em;' +
+      ' line-height: 1; font-weight: 300">' +
+      "    </div>" +
+      "  </div>" +
       "</div>",
   });
 };

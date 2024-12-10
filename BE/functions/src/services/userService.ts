@@ -6,11 +6,10 @@ import * as mailService from "./mailService";
 import { OTPCheckRegister } from "../models/otpCheck";
 import { OptCheckRequest, OptCheckResponse } from "../models/dto/OtpCheckDto";
 import {
-  ConflictError,
   InvalidModelError,
   NotFoundError,
   UnauthorizeError,
-} from "../Errors/Errors";
+} from "../Errors/errors";
 dotenv.config();
 const db = new Firestore();
 export const createNewUser = async (
@@ -62,102 +61,96 @@ export const SendLinkLoginUserToEmail = async (
   return url;
 };
 export const SendOTPCheckingEmail = async (email: string): Promise<string> => {
-  try {
-    const OTP = generateOTP();
-    const oTPCheck = new OTPCheckRegister(OTP, email);
-    const userSnapshot = await admin
-      .firestore()
-      .collection(User.name)
-      .where("email", "==", email)
-      .get();
-    if (!userSnapshot.empty) {
-      throw new ConflictError(`User ${email} existed`);
-    }
-    // Generate check User existed
-    // Check if user existed
-    // const user = await admin.auth().getUserByEmail(email);
-    // if (user !==null) {
-    //   throw new ConflictError(`User ${email} existed`);
-    // }
-    //await mailService.sendMailOTP(email, OTP);
-    await admin
-      .firestore()
-      .collection(OTPCheckRegister.name)
-      .doc(email)
-      .set(oTPCheck.toJson());
-    return email;
-  } catch (error) {
-    throw error;
-  }
+  const OTP = generateOTP();
+  const oTPCheck = new OTPCheckRegister(OTP, email);
+  // const userSnapshot = await admin
+  //   .firestore()
+  //   .collection(User.name)
+  //   .where("email", "==", email)
+  //   .get();
+  // if (!userSnapshot.empty) {
+  //   throw new ConflictError(`User ${email} existed`);
+  // }
+  // Generate check User existed
+  // Check if user existed
+  // const user = await admin.auth().getUserByEmail(email);
+  // if (user !== null) {
+  //   throw new ConflictError(`User ${email} existed`);
+  // }
+  await mailService.sendMailOTP(email, OTP);
+  await admin
+    .firestore()
+    .collection(OTPCheckRegister.name)
+    .doc(email)
+    .set(oTPCheck.toJson());
+  return email;
 };
 export const CheckOTPRegister = async (
   request: OptCheckRequest
 ): Promise<OptCheckResponse> => {
-  try {
-    const doc = await admin
-      .firestore()
-      .collection(OTPCheckRegister.name)
-      .doc(request.email)
-      .get();
-    const dataResponse = doc.data();
-    if (!dataResponse) {
-      throw new NotFoundError("OTP request Not found"); // Nếu không tìm thấy OTP, trả về false
-    }
-    // Chuyển dữ liệu từ Firestore về dạng OTPCheck
-    const otpCheck = OTPCheckRegister.fromJson(dataResponse);
-    // Kiểm tra mã OTP đã hết hạn chưa
-    if (otpCheck.isExpired()) {
-      console.log("Mã OTP đã hết hạn.");
-      throw new InvalidModelError("OTP code is expired");
-    }
+  console.log("Mã OTP");
+  const doc = await admin
+    .firestore()
+    .collection(OTPCheckRegister.name)
+    .doc(request.email)
+    .get();
+  const dataResponse = doc.data();
+  if (!dataResponse) {
+    // Nếu không tìm thấy OTP, trả về false
+    throw new NotFoundError("OTP request Not found");
+  }
+  // Chuyển dữ liệu từ Firestore về dạng OTPCheck
+  const otpCheck = OTPCheckRegister.fromJson(dataResponse);
+  // Kiểm tra mã OTP đã hết hạn chưa
+  if (otpCheck.isExpired()) {
+    console.log("Mã OTP đã hết hạn.");
+    throw new InvalidModelError("OTP code is expired");
+  }
 
-    // Kiểm tra xem mã OTP đã được sử dụng chưa
-    if (otpCheck.isAlreadyUsed()) {
-      throw new InvalidModelError("OTP code already used");
-    }
+  // Kiểm tra xem mã OTP đã được sử dụng chưa
+  if (otpCheck.isAlreadyUsed()) {
+    throw new InvalidModelError("OTP code already used");
+  }
 
-    // Kiểm tra xem mã OTP đã vượt quá số lần thử nhập sai chưa
-    if (otpCheck.isMaxAttemptsReached()) {
-      console.log("Số lần thử đã vượt quá giới hạn.");
-      throw new InvalidModelError("Over Attempts Reached");
-    }
-    // Kiểm tra mã OTP mà người dùng nhập
-    if (otpCheck.OtpCode !== request.OtpCode) {
-      otpCheck.incrementAttempts(); // Tăng số lần thử
-      // Cập nhật lại số lần thử vào Firestore
-      await admin
-        .firestore()
-        .collection(OTPCheckRegister.name)
-        .doc(request.email)
-        .update({
-          Attempts: otpCheck.Attempts,
-        });
-      console.log("Mã OTP không đúng.");
-      throw new NotFoundError("Otp code is not correct");
-    }
-    // Nếu mã OTP chính xác, đánh dấu là đã sử dụng
-    otpCheck.useOTP();
+  // Kiểm tra xem mã OTP đã vượt quá số lần thử nhập sai chưa
+  if (otpCheck.isMaxAttemptsReached()) {
+    console.log("Số lần thử đã vượt quá giới hạn.");
+    throw new InvalidModelError("Over Attempts Reached");
+  }
+  // Kiểm tra mã OTP mà người dùng nhập
+  if (otpCheck.OtpCode !== request.OtpCode) {
+    otpCheck.incrementAttempts(); // Tăng số lần thử
+    // Cập nhật lại số lần thử vào Firestore
     await admin
       .firestore()
       .collection(OTPCheckRegister.name)
       .doc(request.email)
       .update({
-        IsUsed: otpCheck.IsUsed,
+        Attempts: otpCheck.Attempts,
       });
-    // Tạo tài khoản người dùng
-    const userRecord = await admin.auth().createUser({
-      email: request.email,
-      emailVerified: true,
-    });
-    console.log("Mã OTP hợp lệ.");
-    const token = await admin.auth().createCustomToken(userRecord.uid);
-    return new OptCheckResponse(userRecord.uid, token);
-  } catch (error) {
-    throw error;
+    console.log("Mã OTP không đúng.");
+    throw new NotFoundError("Otp code is not correct");
   }
+  // Nếu mã OTP chính xác, đánh dấu là đã sử dụng
+  otpCheck.useOTP();
+  await admin
+    .firestore()
+    .collection(OTPCheckRegister.name)
+    .doc(request.email)
+    .update({
+      IsUsed: otpCheck.IsUsed,
+    });
+  // Tạo tài khoản người dùng
+  const userRecord = await admin.auth().createUser({
+    email: request.email,
+    emailVerified: true,
+  });
+  console.log("Mã OTP hợp lệ.");
+  const token = await admin.auth().createCustomToken(userRecord.uid);
+  return new OptCheckResponse(userRecord.uid, token);
 };
-function generateOTP(length: number = 6): string {
-  let otp: string = "";
+function generateOTP(length = 6): string {
+  let otp = "";
   for (let i = 0; i < length; i++) {
     otp += Math.floor(Math.random() * 10).toString(); // Chọn ngẫu nhiên từ '0' đến '9'
   }
@@ -168,34 +161,28 @@ export const CreateNewPasswordUser = async (request: any) => {
   if (!request.auth) {
     throw new UnauthorizeError("Unauthorize");
   }
-  try {
-    const user = await admin
-      .auth()
-      .updateUser(request.auth.uid, { password: request.data.password });
-    await admin.firestore().collection(User.name).doc(request.auth.uid).set(
-      {
-        displayName: request.data.password,
-      },
-      { merge: true }
-    );
-    return user;
-  } catch (error) {
-    throw error;
-  }
+  console.log("auth", request.auth);
+  const user = await admin
+    .auth()
+    .updateUser(request.auth.uid, { password: request.data.password });
+  // await admin.firestore().collection(User.name).doc(request.auth.uid).set(
+  //   {
+  //     displayName: request.data.displayName,
+  //   },
+  //   { merge: true }
+  // );
+  return user;
 };
 export const CreateNewUserDetail = async (request: any) => {
-  try {
-    if (!request.auth) {
-      throw new UnauthorizeError("Unauthorize");
-    }
-    // Cập nhật displayName cho Firestore
-    await admin.firestore().collection(User.name).doc(request.auth.uid).set(
-      {
-        displayName: request.data.displayName,
-      },
-      { merge: true }
-    ); // Sử dụng merge để chỉ cập nhật displayName mà không ghi đè toàn bộ document
-  } catch (error) {
-    throw error;
+  if (!request.auth) {
+    throw new UnauthorizeError("Unauthorize");
   }
+  // Cập nhật displayName cho Firestore
+  await admin.firestore().collection(User.name).doc(request.auth.uid).set(
+    {
+      displayName: request.data.displayName,
+    },
+    { merge: true }
+  );
+  // Sử dụng merge để chỉ cập nhật displayName mà không ghi đè toàn bộ document
 };

@@ -1,4 +1,3 @@
-// src/lib/services/HttpService.ts
 export class HttpService {
   private baseUrl: string;
 

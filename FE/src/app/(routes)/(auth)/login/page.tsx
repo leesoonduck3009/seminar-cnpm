@@ -1,42 +1,22 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { auth } from "@/helpers/firebase";
-import { Login } from "@/services/authService";
-import { User } from "firebase/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 const LogInPage = () => {
-  const [email, setEmail] = React.useState("");
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-  const [authUser, setAuthUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { currentUser, loading } = useAuth();
   const router = useRouter();
+
   useEffect(() => {
-    // Giả sử bạn có Firebase Auth hoặc logic kiểm tra đăng nhập
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setAuthUser(user);
-      setIsLoading(false);
-      console.log("User", user);
-    });
-    // Cleanup subscription khi component unmount
-    return () => unsubscribe();
-  }, []);
-  useEffect(() => {
-    if (!isLoading && authUser) {
-      // Nếu người dùng đã đăng nhập, điều hướng tới trang profile
-      router.push("/home");
+    if (currentUser) {
+      router.push("/boards");
     }
-  }, [authUser, isLoading, router]);
-  const handleLogin = async () => {
-    const user = await Login(email, "3009200Binh33");
-    console.log(user);
-    window.location.href = "/home";
-  };
-  return !isLoading ? (
+  }, [currentUser, router]);
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
         <svg
@@ -62,16 +42,12 @@ const LogInPage = () => {
         <Input
           className="border mb-3 border-[#B6c2cf]"
           placeholder="Nhập email của bạn"
-          value={email}
-          onChange={handleEmailChange}
-          type="email"
         />
-        <Button
-          className="bg-[#0052CC] mb-5 w-full font-semibold"
-          onClick={handleLogin}
-        >
-          Tiếp tục
-        </Button>
+        <a href="/login-confirmmail" className="w-full">
+          <Button className="bg-[#0052CC] mb-5 w-full font-semibold">
+            Tiếp tục
+          </Button>
+        </a>
 
         <p className="font-semibold text-[13px] text-[#626262]">
           Hoặc tiếp tục với
@@ -129,7 +105,7 @@ const LogInPage = () => {
         </div>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default LogInPage;
