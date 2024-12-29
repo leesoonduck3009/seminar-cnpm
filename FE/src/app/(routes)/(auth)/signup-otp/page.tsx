@@ -6,26 +6,33 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { OptCheckRequest } from "@/models/auths/auth";
-import { RegisterUserCheckOtp } from "@/services/authService";
 import * as React from "react";
 
-const page = () => {
+const Page = () => {
   const [value, setValue] = React.useState("");
-  const handleOtpCheckClick = async () => {
-    const email = localStorage.getItem("email");
-    const request: OptCheckRequest = new OptCheckRequest(email!, value);
-    const response = await RegisterUserCheckOtp(request);
-    console.log(response);
-    if (response.isSuccess) {
-      window.location.href = "/signup-pass";
+  const [countdown, setCountdown] = React.useState(0);
+  const [isResending, setIsResending] = React.useState(false);
+
+  React.useEffect(() => {
+    if (countdown > 0) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
     } else {
-      alert(response.errorMessage);
+      setIsResending(false);
     }
+  }, [countdown]);
+
+  const handleResendOTP = () => {
+    // Thêm logic gửi lại OTP ở đây
+    setCountdown(60);
+    setIsResending(true);
   };
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-center ">
-      <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
+      <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center p-8">
         <svg
           width="110"
           height="50"
@@ -63,21 +70,33 @@ const page = () => {
           </InputOTP>
           <div className="text-center text-[12px]">
             {value === "" ? (
-              <>Enter your one-time password.</>
+              <>Vui lòng nhập mã OTP</>
             ) : (
               <>You entered: {value}</>
             )}
           </div>
         </div>
-        <Button
-          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
-          onClick={handleOtpCheckClick}
+
+        <a href="/signup-pass" className="w-full">
+          <Button className="bg-[#0052CC] mt-4 mb-2 w-full font-semibold">
+            Tiếp tục
+          </Button>
+        </a>
+
+        <button
+          onClick={handleResendOTP}
+          disabled={isResending}
+          className={`text-sm ${
+            isResending
+              ? "text-gray-400 cursor-not-allowed"
+              : "text-blue-600 hover:text-blue-700"
+          }`}
         >
-          Tiếp tục
-        </Button>
+          {isResending ? `Gửi lại OTP (${countdown}s)` : "Gửi lại OTP"}
+        </button>
       </div>
     </div>
   );
 };
 
-export default page;
+export default Page;
