@@ -9,24 +9,16 @@ import { OptCheckRequest } from "../models/dto/OtpCheckDto";
 // import { UserLoginRequestDto } from "../models/dto/User/userLoginRequestDto";
 
 export const AddNewUser = async (req: Request, res: Response) => {
-  try {
-    const newUser = req.body as Omit<
-      User,
-      "boards" | "id" | "createdAt" | "updatedAt"
-    >;
-    const user = await userService.createNewUser(newUser);
-    res.status(200).json({ isSuccess: true, data: user, error: null });
-  } catch (e) {
-    throw e;
-  }
+  const newUser = req.body as Omit<
+    User,
+    "boards" | "id" | "createdAt" | "updatedAt"
+  >;
+  const user = await userService.createNewUser(newUser);
+  res.status(200).json({ isSuccess: true, data: user, error: null });
 };
 export const GetAllUser = async (req: Request, res: Response) => {
-  try {
-    const users = await userService.getAllUser();
-    res.status(200).json({ isSuccess: true, data: users, error: null });
-  } catch (e) {
-    throw e;
-  }
+  const users = await userService.getAllUser();
+  res.status(200).json({ isSuccess: true, data: users, error: null });
 };
 export const SendEmailToUser = async (req: Request, res: Response) => {
   try {
@@ -87,7 +79,7 @@ export const CreateUserAccount = async (
   next: NextFunction
 ) => {
   try {
-    //const request = req.body as UserRegisterDetail;
+    // const request = req.body as UserRegisterDetail;
     const response = new ApiResponse(
       // await userService.CreateNewUser(request),
       null,

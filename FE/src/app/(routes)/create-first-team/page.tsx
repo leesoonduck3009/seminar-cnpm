@@ -1,9 +1,18 @@
+"use client";
 import Header from "@/components/header/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import { useBoards } from "@/contexts/BoardContext";
+import React, { useState } from "react";
 
 const page = () => {
+  const boardContext = useBoards();
+  const [listItem1, setListItem1] = useState<string>("");
+  const [listItem2, setListItem2] = useState<string>("");
+  const [listItem3, setListItem3] = useState<string>("");
+  const continueHandler = () => {
+    console.log(listItem1, listItem2, listItem3);
+  };
   return (
     <div className="flex flex-col">
       <Header />
@@ -25,20 +34,29 @@ const page = () => {
               Đặt tên danh sách của bạn
             </p>
             <Input
-              className="border mb-5 border-[#B6c2cf]"
+              className="border mb-5 border-[#B6c2cf] text-white"
               placeholder="Ví dụ: Cần làm"
+              onChange={(e) => setListItem1(e.target.value)}
             />
             <Input
-              className="border mb-5 border-[#B6c2cf]"
+              className="border mb-5 border-[#B6c2cf] text-white"
               placeholder="Ví dụ: Đang làm"
+              onChange={(e) => setListItem2(e.target.value)}
             />
             <Input
-              className="border border-[#B6c2cf]"
+              className="border border-[#B6c2cf] text-white"
               placeholder="Ví dụ: Đã xong"
+              onChange={(e) => setListItem3(e.target.value)}
             />
-            <a href="/create-first-team1">
-              <Button className="bg-[#579DFF] mt-5 font-semibold">Sau</Button>
-            </a>
+
+            <Button
+              className="bg-[#579DFF] mt-5 font-semibold"
+              onClick={continueHandler}
+            >
+              Sau
+            </Button>
+            {/* <a href="/create-first-team1">
+            </a> */}
           </div>
         </div>
         <div className="col-span-3 flex justify-center items-center bg-[#1D2632]">

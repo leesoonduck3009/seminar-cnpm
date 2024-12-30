@@ -1,4 +1,4 @@
-import { StatusCode } from "./enums/statusCode";
+import { StatusCode } from "@/enums/statusCode";
 export class ApiResponse<T> {
   data: T | null; // Dữ liệu trả về, có thể là null nếu có lỗi
   isSuccess: boolean; // Biến xác định phản hồi có thành công hay không

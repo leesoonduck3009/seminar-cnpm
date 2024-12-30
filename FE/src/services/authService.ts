@@ -27,7 +27,6 @@ export const RegisterUserSendOtp = async (
         email: email,
       }
     );
-    console.log(result);
     return result;
   } catch (error: any) {
     console.log(error);
@@ -51,6 +50,7 @@ export const RegisterUserCheckOtp = async (
       request
     );
     if (result.statusCode === 200) {
+      console.log("token", result.data!.token);
       const userCredential = await signInWithCustomToken(
         auth,
         result.data!.token
@@ -70,6 +70,8 @@ export const RegisterUserCreatePassword = async (
   password: string
 ): Promise<ApiResponse<string>> => {
   try {
+    console.log("hello");
+    console.log("auh", auth.currentUser);
     const result = await httpsCallable(
       firebaseFunction,
       "CreatePasswordUser"
@@ -77,7 +79,7 @@ export const RegisterUserCreatePassword = async (
       password: password,
     });
     const email = localStorage.getItem("email")!;
-    signInWithEmailAndPassword(auth, email, password);
+    await signInWithEmailAndPassword(auth, email, password);
     console.log(result);
     return new ApiResponse<string>("success", true, "Success", 200);
   } catch (error: any) {
