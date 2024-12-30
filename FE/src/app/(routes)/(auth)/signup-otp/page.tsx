@@ -6,13 +6,10 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { OptCheckRequest } from "@/models/auths/auth";
-import { RegisterUserCheckOtp } from "@/services/authService";
 import * as React from "react";
 
 const Page = () => {
   const [value, setValue] = React.useState("");
-
   const [countdown, setCountdown] = React.useState(0);
   const [isResending, setIsResending] = React.useState(false);
 
@@ -31,19 +28,6 @@ const Page = () => {
     // Thêm logic gửi lại OTP ở đây
     setCountdown(60);
     setIsResending(true);
-  };
-
-
-  const handleOtpCheckClick = async () => {
-    const email = localStorage.getItem("email");
-    const request: OptCheckRequest = new OptCheckRequest(email!, value);
-    const response = await RegisterUserCheckOtp(request);
-    console.log(response);
-    if (response.isSuccess) {
-      window.location.href = "/signup-pass";
-    } else {
-      alert(response.errorMessage);
-    }
   };
 
   return (
@@ -93,7 +77,6 @@ const Page = () => {
           </div>
         </div>
 
-
         <a href="/signup-pass" className="w-full">
           <Button className="bg-[#0052CC] mt-4 mb-2 w-full font-semibold">
             Tiếp tục
@@ -111,14 +94,6 @@ const Page = () => {
         >
           {isResending ? `Gửi lại OTP (${countdown}s)` : "Gửi lại OTP"}
         </button>
-
-        <Button
-          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
-          onClick={handleOtpCheckClick}
-        >
-          Tiếp tục
-        </Button>
-
       </div>
     </div>
   );

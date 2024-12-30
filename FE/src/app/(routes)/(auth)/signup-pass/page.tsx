@@ -3,29 +3,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { auth } from "@/helpers/firebase";
-import { RegisterUserCreatePassword } from "@/services/authService";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const page = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [enableContinue, setEnableContinue] = useState(false);
-  const [password, setPassword] = useState("");
-  const router = useRouter();
-  const handleContinueClick = async () => {
-    const response = await RegisterUserCreatePassword(password);
-    if (response.isSuccess) {
-      console.log("User created successfully", auth.currentUser);
-      router.push("/signup-info");
-    } else {
-      alert(response.errorMessage);
-    }
-  };
+
   const handlePasswordChange = (event) => {
     const password = event.target.value;
-    setPassword(password);
     if (
       password.length < 8 ||
       !/[A-Z]/.test(password) ||
@@ -38,7 +23,6 @@ const page = () => {
     } else {
       setPasswordError(false);
       setErrorMessage("");
-      setEnableContinue(true);
     }
   };
   return (
@@ -69,20 +53,17 @@ const page = () => {
             passwordError ? "border-red-500" : ""
           }`}
           placeholder="Nhập mật khẩu của bạn"
-          type="password"
-          value={password}
           onChange={handlePasswordChange}
         />
         {passwordError && (
           <div className="text-red-500 text-sm mt-1">{errorMessage}</div>
         )}
-        <Button
-          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
-          onClick={handleContinueClick}
-          disabled={!enableContinue}
-        >
-          Tiếp tục
-        </Button>
+
+        <a href="/signup-info" className="w-full">
+          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
+            Tiếp tục
+          </Button>
+        </a>
       </div>
     </div>
   );
