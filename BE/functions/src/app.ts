@@ -4,18 +4,12 @@ import userRoute from "./routes/userRoute";
 import cors from "cors";
 import { GlobalExceptionMiddleware } from "./middlewares/globalExceptionMiddleware";
 
-var app = express();
+const app = express();
 
 // build multiple CRUD interfaces:
 // Middleware để phân tích body của yêu cầu
 app.use(express.json());
 app.use(cors());
-
-// Route chính
-app.get("/", (req: Request, res: Response) => {
-  console.log("Hello");
-  res.json({ test: "Welcome to the Product API!" });
-});
 
 // Routes cho sản phẩm
 app.use("/api", userRoute);

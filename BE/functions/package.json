@@ -3,6 +3,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
+    "format": "prettier --write \"**/*.{js,ts,json,md}\"",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "dev": "npm run build && firebase emulators:start --inspect-functions --only functions,firestore,auth",
@@ -31,8 +32,11 @@
     "@typescript-eslint/parser": "^5.12.0",
     "eslint": "^8.9.0",
     "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^5.2.1",
     "firebase-functions-test": "^3.1.0",
+    "prettier": "^3.4.2",
     "typescript": "^4.9.0"
   },
   "private": true

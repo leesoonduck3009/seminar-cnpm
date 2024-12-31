@@ -1,9 +1,11 @@
 "use client";
+import { Board } from "@/models/board";
 import { createContext, useContext, useState } from "react";
 
 const BoardContext = createContext(null);
 
 export const BoardProvider = ({ children }) => {
+  const [firstBoard, setFirstBoard] = useState < Board > {};
   const [boards, setBoards] = useState([
     {
       id: 1,
@@ -51,7 +53,6 @@ export const BoardProvider = ({ children }) => {
     const board = getBoardById(boardId);
     setActiveBoard(board);
   };
-
   const value = {
     boards,
     activeBoard,

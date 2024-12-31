@@ -6,13 +6,28 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useAuth } from "@/contexts/AuthContext";
+import { OptCheckRequest } from "@/models/auth";
+import {
+  RegisterUserCheckOtp,
+  RegisterUserSendOtp,
+} from "@/services/authService";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 const Page = () => {
   const [value, setValue] = React.useState("");
+  const [error, setError] = React.useState("");
   const [countdown, setCountdown] = React.useState(0);
   const [isResending, setIsResending] = React.useState(false);
+  const { currentUser, loading } = useAuth();
+  const router = useRouter();
 
+  React.useEffect(() => {
+    if (currentUser) {
+      router.push("/boards");
+    }
+  }, [currentUser, router]);
   React.useEffect(() => {
     if (countdown > 0) {
       const timer = setInterval(() => {
@@ -23,14 +38,32 @@ const Page = () => {
       setIsResending(false);
     }
   }, [countdown]);
-
+  React.useEffect(() => {
+    setCountdown(60);
+    setIsResending(true);
+  }, []);
   const handleResendOTP = () => {
     // Thêm logic gửi lại OTP ở đây
+    RegisterUserSendOtp(localStorage.getItem("email")!);
     setCountdown(60);
     setIsResending(true);
   };
 
-  return (
+  const handleOtpCheckClick = async () => {
+    const email = localStorage.getItem("email");
+    const request: OptCheckRequest = new OptCheckRequest(email!, value);
+    const response = await RegisterUserCheckOtp(request);
+    console.log("response", response);
+    if (response.isSuccess) {
+      window.location.href = "/signup-pass";
+    } else {
+      setError(response.errorMessage!);
+    }
+  };
+
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center p-8">
         <svg
@@ -53,7 +86,7 @@ const Page = () => {
         <h1 className="mt-5 mb-3 text-[16px] font-semibold text-[#172b4d]">
           Vui lòng nhập mã OTP
         </h1>
-        <div className="space-y-2">
+        <div className="flex justify-center flex-col space-y-2">
           <InputOTP
             maxLength={6}
             value={value}
@@ -69,19 +102,22 @@ const Page = () => {
             </InputOTPGroup>
           </InputOTP>
           <div className="text-center text-[12px]">
-            {value === "" ? (
-              <>Vui lòng nhập mã OTP</>
-            ) : (
-              <>You entered: {value}</>
-            )}
+            {value === "" && <>Vui lòng nhập mã OTP</>}
           </div>
+          {error !== "" && (
+            <span className="text-lg place-self-center text-center text-red-600 text-[12px]">
+              {" "}
+              {error}
+            </span>
+          )}
         </div>
 
-        <a href="/signup-pass" className="w-full">
-          <Button className="bg-[#0052CC] mt-4 mb-2 w-full font-semibold">
-            Tiếp tục
-          </Button>
-        </a>
+        <Button
+          className="bg-[#0052CC] mt-4 mb-2 w-full font-semibold"
+          onClick={handleOtpCheckClick}
+        >
+          Tiếp tục
+        </Button>
 
         <button
           onClick={handleResendOTP}

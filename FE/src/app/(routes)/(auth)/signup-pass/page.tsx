@@ -3,12 +3,21 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const page = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { currentUser, loading } = useAuth();
+  const router = useRouter();
 
+  React.useEffect(() => {
+    if (currentUser) {
+      router.push("/boards");
+    }
+  }, [currentUser, router]);
   const handlePasswordChange = (event) => {
     const password = event.target.value;
     if (
@@ -25,7 +34,9 @@ const page = () => {
       setErrorMessage("");
     }
   };
-  return (
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
         <svg

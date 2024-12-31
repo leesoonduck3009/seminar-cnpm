@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "firebase-tools": "^13.22.0"
+  },
+  "dependencies": {
+    "project-management": "file:"
   }
 }

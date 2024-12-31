@@ -19,7 +19,6 @@ export class OTPCheckRegister {
 
   // Kiểm tra mã OTP có còn hiệu lực hay không
   isExpired(): boolean {
-    debugger;
     return new Date() > this.ExpiredTime;
   }
 
@@ -34,7 +33,7 @@ export class OTPCheckRegister {
   }
 
   // Kiểm tra số lần nhập sai có vượt quá giới hạn không
-  isMaxAttemptsReached(maxAttempts: number = 3): boolean {
+  isMaxAttemptsReached(maxAttempts = 3): boolean {
     return this.Attempts >= maxAttempts;
   }
 

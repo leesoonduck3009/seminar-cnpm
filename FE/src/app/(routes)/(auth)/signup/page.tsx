@@ -2,14 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React, { useState } from "react";
-
+import {
+  RegisterUserCheckOtp,
+  RegisterUserSendOtp,
+} from "@/services/authService";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 const SignUpPage = () => {
+  const { currentUser, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/boards");
+    }
+  }, [currentUser, router]);
   const [emailError, setEmailError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [email, setEmail] = useState("");
   const handleEmailChange = (event) => {
-    const email = event.target.value;
+    setEmail(event.target.value);
     if (!isValidEmail(email)) {
       setEmailError(true);
       setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ.");
@@ -18,11 +31,18 @@ const SignUpPage = () => {
       setErrorMessage("");
     }
   };
-
-  function isValidEmail(email) {
+  const signUpHandler = async () => {
+    // Call API to sign up
+    if (emailError) return;
+    await RegisterUserSendOtp(email);
+    router.push("/signup-otp");
+  };
+  function isValidEmail(email: string) {
     return email.includes("@");
   }
-  return (
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
         <svg
@@ -50,6 +70,7 @@ const SignUpPage = () => {
             emailError ? "border-red-500" : ""
           }`}
           placeholder="Nhập email của bạn"
+          value={email}
           onChange={handleEmailChange}
         />
         {emailError && (
@@ -60,12 +81,12 @@ const SignUpPage = () => {
           Cloud và công nhận Chính sách quyền riêng tư.
         </p>
 
-        <a href="/signup-otp" className="w-full">
-          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
-            Đăng ký
-          </Button>
-        </a>
-
+        <Button
+          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
+          onClick={signUpHandler}
+        >
+          Đăng ký
+        </Button>
         <p className="font-semibold text-[13px] text-[#626262]">
           Hoặc tiếp tục với
         </p>

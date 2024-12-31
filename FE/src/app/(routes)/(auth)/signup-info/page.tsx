@@ -1,9 +1,27 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
-
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { RegisterUserCreateDetail } from "@/services/authService";
+import { useAuth } from "@/contexts/AuthContext";
 const page = () => {
-  return (
+  const router = useRouter();
+  const { currentUser, loading } = useAuth();
+
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/boards");
+    }
+  }, [currentUser, router]);
+  const [name, setName] = React.useState("");
+  const handlerSignupInfo = async () => {
+    await RegisterUserCreateDetail(name);
+    router.push("/boards");
+  };
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
         <svg
@@ -27,20 +45,20 @@ const page = () => {
           Vui lòng nhập thông tin cá nhân
         </h1>
         <div className="flex flex-col w-full">
-          <p className="font-semibold text-[14px] mb-2">Email</p>
-          <Input className="border mb-4 border-[#B6c2cf]" placeholder="Email" />
           <p className="font-semibold text-[14px] mb-2">Tên hiển thị</p>
           <Input
             className="border mb-3 border-[#B6c2cf]"
             placeholder="Nhập tên hiển thị"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
-
-        <a href="/home" className="w-full">
-          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
-            Khám phá ngay thôi
-          </Button>
-        </a>
+        <Button
+          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
+          onClick={handlerSignupInfo}
+        >
+          Khám phá ngay thôi
+        </Button>
       </div>
     </div>
   );

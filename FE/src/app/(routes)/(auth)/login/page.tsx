@@ -1,9 +1,22 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 const LogInPage = () => {
-  return (
+  const { currentUser, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/boards");
+    }
+  }, [currentUser, router]);
+  return loading ? (
+    <div></div>
+  ) : (
     <div className="min-h-screen bg-white flex items-center justify-center ">
       <div className="bg-white shadow-md w-[368px] flex-col rounded-[2px] flex items-center justify-center  p-8">
         <svg
