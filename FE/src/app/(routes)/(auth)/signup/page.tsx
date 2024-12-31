@@ -2,48 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RegisterUserSendOtp } from "@/services/authService";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const SignUpPage = () => {
   const [emailError, setEmailError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [email, setEmail] = useState("");
-  const [enableContinue, setEnableContinue] = useState(false);
-  const router = useRouter();
 
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (event) => {
     const email = event.target.value;
-    setEmail(email);
-    // Call API
-    if (isValidEmail(email)) {
-      setEnableContinue(true);
-    }
-  };
-  const handleSignUpSendOtpClick = async () => {
-    if (!enableContinue) {
-      setEnableContinue(false);
+    if (!isValidEmail(email)) {
       setEmailError(true);
       setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ.");
-      return;
-    }
-    setEmailError(false);
-    setErrorMessage("");
-    const response = await RegisterUserSendOtp(email);
-    console.log(response);
-    if (response.isSuccess) {
-      // Redirect to OTP page
-      localStorage.setItem("email", email);
-      router.push("/signup-otp");
     } else {
-      setEmailError(true);
-      setErrorMessage(response.errorMessage!);
+      setEmailError(false);
+      setErrorMessage("");
     }
   };
-  function isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+
+  function isValidEmail(email) {
+    return email.includes("@");
   }
   return (
     <div className="min-h-screen bg-white flex items-center justify-center ">
@@ -83,12 +60,11 @@ const SignUpPage = () => {
           Cloud và công nhận Chính sách quyền riêng tư.
         </p>
 
-        <Button
-          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
-          onClick={handleSignUpSendOtpClick}
-        >
-          Đăng ký
-        </Button>
+        <a href="/signup-otp" className="w-full">
+          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
+            Đăng ký
+          </Button>
+        </a>
 
         <p className="font-semibold text-[13px] text-[#626262]">
           Hoặc tiếp tục với

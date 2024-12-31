@@ -6,7 +6,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { OptCheckRequest } from "@/models/auths/auth";
+import { OptCheckRequest } from "@/models/auth";
 import {
   RegisterUserCheckOtp,
   RegisterUserSendOtp,

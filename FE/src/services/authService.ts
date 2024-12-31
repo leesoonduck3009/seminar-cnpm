@@ -4,7 +4,7 @@ import {
   CreateUserRequest,
   OptCheckRequest,
   UserRegisterResponse,
-} from "@/models/auths/auth";
+} from "@/models/auth";
 import {
   signInWithCustomToken,
   signInWithEmailAndPassword,
@@ -13,7 +13,7 @@ import {
 } from "firebase/auth";
 import { auth, firebaseFunction } from "@/helpers/firebase";
 import { httpsCallable } from "firebase/functions";
-import { OptCheckResponse } from "@/models/auths/dtos/OtpCheckDto";
+import { OtpCheckResponse } from "@/models/dto/OtpCheckDto";
 
 const httpService = new HttpService();
 // Người dùng nhập send otp khi mới tạo tài khoản
