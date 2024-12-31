@@ -1,6 +1,4 @@
 // src/lib/services/HttpService.ts
-import dotenv from "dotenv";
-dotenv.config();
 export class HttpService {
   private baseUrl: string;
 
