@@ -18,7 +18,7 @@ jobs:
         working-directory: BE/functions
         run: |
           touch .env
-          echo SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }} >> .env
+          echo "SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }}" >> .env
           
       - name: Install Firebase dependencies
         working-directory: BE
