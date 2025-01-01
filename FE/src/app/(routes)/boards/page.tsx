@@ -81,7 +81,8 @@ const BoardsPage = () => {
   };
 
   const filteredBoards = React.useMemo(() => {
-    let filtered = boards.filter((board) =>
+    console.log("allBoards", allBoards);
+    let filtered = allBoards.filter((board) =>
       board.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 

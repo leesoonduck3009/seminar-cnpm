@@ -1,4 +1,5 @@
 // store/useBoardStore.ts
+import { ColumnService } from "@/services/columnService";
 import { Board } from "@/types/board";
 import { Card, Label, Activity } from "@/types/card";
 import { Column } from "@/types/column";
@@ -226,110 +227,255 @@ const useBoardStore = create<BoardState>()(
           return get().boards.find((board) => board.id === boardId);
         },
 
-        addColumn: (boardId, title) => {
-          const newColumn: Column = {
-            id: `column-${Date.now()}`,
-            title,
-            cards: [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
+        // addColumn: (boardId, title) => {
+        //   const newColumn: Column = {
+        //     id: `column-${Date.now()}`,
+        //     title,
+        //     cards: [],
+        //     createdAt: new Date().toISOString(),
+        //     updatedAt: new Date().toISOString(),
+        //   };
 
-          set((state) => ({
-            boards: state.boards.map((board) =>
-              board.id === boardId
-                ? { ...board, columns: [...board.columns, newColumn] }
-                : board
-            ),
-            activeBoard:
-              state.activeBoard?.id === boardId
-                ? {
-                    ...state.activeBoard,
-                    columns: [...state.activeBoard.columns, newColumn],
-                  }
-                : state.activeBoard,
-          }));
-        },
+        //   set((state) => ({
+        //     boards: state.boards.map((board) =>
+        //       board.id === boardId
+        //         ? { ...board, columns: [...board.columns, newColumn] }
+        //         : board
+        //     ),
+        //     activeBoard:
+        //       state.activeBoard?.id === boardId
+        //         ? {
+        //             ...state.activeBoard,
+        //             columns: [...state.activeBoard.columns, newColumn],
+        //           }
+        //         : state.activeBoard,
+        //   }));
+        // },
+        addColumn: async (boardId: string, title: string) => {
+          try {
+            set({ isLoading: true, error: null });
 
-        updateColumn: (boardId, columnId, data) => {
-          set((state) => ({
-            boards: state.boards.map((board) =>
-              board.id === boardId
-                ? {
-                    ...board,
-                    columns: board.columns.map((column) =>
-                      column.id === columnId
-                        ? {
-                            ...column,
-                            ...data,
-                            updatedAt: new Date().toISOString(),
-                          }
-                        : column
-                    ),
-                  }
-                : board
-            ),
-            activeBoard:
-              state.activeBoard?.id === boardId
-                ? {
-                    ...state.activeBoard,
-                    columns: state.activeBoard.columns.map((column) =>
-                      column.id === columnId
-                        ? {
-                            ...column,
-                            ...data,
-                            updatedAt: new Date().toISOString(),
-                          }
-                        : column
-                    ),
-                  }
-                : state.activeBoard,
-          }));
-        },
+            const newColumn = await ColumnService.createColumn(boardId, title);
 
-        deleteColumn: (boardId, columnId) => {
-          set((state) => ({
-            boards: state.boards.map((board) =>
-              board.id === boardId
-                ? {
-                    ...board,
-                    columns: board.columns.filter(
-                      (column) => column.id !== columnId
-                    ),
-                  }
-                : board
-            ),
-            activeBoard:
-              state.activeBoard?.id === boardId
-                ? {
-                    ...state.activeBoard,
-                    columns: state.activeBoard.columns.filter(
-                      (column) => column.id !== columnId
-                    ),
-                  }
-                : state.activeBoard,
-          }));
-        },
-
-        moveColumn: (boardId, sourceIndex, destinationIndex) => {
-          set((state) => {
-            const board = state.boards.find((b) => b.id === boardId);
-            if (!board) return state;
-
-            const newColumns = Array.from(board.columns);
-            const [removed] = newColumns.splice(sourceIndex, 1);
-            newColumns.splice(destinationIndex, 0, removed);
-
-            return {
-              boards: state.boards.map((b) =>
-                b.id === boardId ? { ...b, columns: newColumns } : b
+            set((state) => ({
+              boards: state.boards.map((board) =>
+                board.id === boardId
+                  ? { ...board, columns: [...board.columns, newColumn] }
+                  : board
               ),
               activeBoard:
                 state.activeBoard?.id === boardId
-                  ? { ...state.activeBoard, columns: newColumns }
+                  ? {
+                      ...state.activeBoard,
+                      columns: [...state.activeBoard.columns, newColumn],
+                    }
                   : state.activeBoard,
-            };
-          });
+              isLoading: false,
+            }));
+
+            return newColumn;
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
+        },
+
+        // updateColumn: (boardId, columnId, data) => {
+        //   set((state) => ({
+        //     boards: state.boards.map((board) =>
+        //       board.id === boardId
+        //         ? {
+        //             ...board,
+        //             columns: board.columns.map((column) =>
+        //               column.id === columnId
+        //                 ? {
+        //                     ...column,
+        //                     ...data,
+        //                     updatedAt: new Date().toISOString(),
+        //                   }
+        //                 : column
+        //             ),
+        //           }
+        //         : board
+        //     ),
+        //     activeBoard:
+        //       state.activeBoard?.id === boardId
+        //         ? {
+        //             ...state.activeBoard,
+        //             columns: state.activeBoard.columns.map((column) =>
+        //               column.id === columnId
+        //                 ? {
+        //                     ...column,
+        //                     ...data,
+        //                     updatedAt: new Date().toISOString(),
+        //                   }
+        //                 : column
+        //             ),
+        //           }
+        //         : state.activeBoard,
+        //   }));
+        // },
+
+        updateColumn: async (
+          boardId: string,
+          columnId: string,
+          data: Partial<Column>
+        ) => {
+          try {
+            set({ isLoading: true, error: null });
+
+            await ColumnService.updateColumn(boardId, columnId, data);
+
+            set((state) => {
+              const updateColumns = (columns: Column[]) =>
+                columns.map((column) =>
+                  column.id === columnId
+                    ? {
+                        ...column,
+                        ...data,
+                        updatedAt: new Date().toISOString(),
+                      }
+                    : column
+                );
+
+              return {
+                boards: state.boards.map((board) =>
+                  board.id === boardId
+                    ? { ...board, columns: updateColumns(board.columns) }
+                    : board
+                ),
+                activeBoard:
+                  state.activeBoard?.id === boardId
+                    ? {
+                        ...state.activeBoard,
+                        columns: updateColumns(state.activeBoard.columns),
+                      }
+                    : state.activeBoard,
+                isLoading: false,
+              };
+            });
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
+        },
+
+        // deleteColumn: (boardId, columnId) => {
+        //   set((state) => ({
+        //     boards: state.boards.map((board) =>
+        //       board.id === boardId
+        //         ? {
+        //             ...board,
+        //             columns: board.columns.filter(
+        //               (column) => column.id !== columnId
+        //             ),
+        //           }
+        //         : board
+        //     ),
+        //     activeBoard:
+        //       state.activeBoard?.id === boardId
+        //         ? {
+        //             ...state.activeBoard,
+        //             columns: state.activeBoard.columns.filter(
+        //               (column) => column.id !== columnId
+        //             ),
+        //           }
+        //         : state.activeBoard,
+        //   }));
+        // },
+
+        deleteColumn: async (boardId: string, columnId: string) => {
+          try {
+            set({ isLoading: true, error: null });
+
+            await ColumnService.deleteColumn(boardId, columnId);
+
+            set((state) => ({
+              boards: state.boards.map((board) =>
+                board.id === boardId
+                  ? {
+                      ...board,
+                      columns: board.columns.filter(
+                        (column) => column.id !== columnId
+                      ),
+                    }
+                  : board
+              ),
+              activeBoard:
+                state.activeBoard?.id === boardId
+                  ? {
+                      ...state.activeBoard,
+                      columns: state.activeBoard.columns.filter(
+                        (column) => column.id !== columnId
+                      ),
+                    }
+                  : state.activeBoard,
+              isLoading: false,
+            }));
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
+        },
+
+        // moveColumn: (boardId, sourceIndex, destinationIndex) => {
+        //   set((state) => {
+        //     const board = state.boards.find((b) => b.id === boardId);
+        //     if (!board) return state;
+
+        //     const newColumns = Array.from(board.columns);
+        //     const [removed] = newColumns.splice(sourceIndex, 1);
+        //     newColumns.splice(destinationIndex, 0, removed);
+
+        //     return {
+        //       boards: state.boards.map((b) =>
+        //         b.id === boardId ? { ...b, columns: newColumns } : b
+        //       ),
+        //       activeBoard:
+        //         state.activeBoard?.id === boardId
+        //           ? { ...state.activeBoard, columns: newColumns }
+        //           : state.activeBoard,
+        //     };
+        //   });
+        // },
+
+        moveColumn: async (
+          boardId: string,
+          sourceIndex: number,
+          destinationIndex: number
+        ) => {
+          try {
+            set({ isLoading: true, error: null });
+
+            set((state) => {
+              const board = state.boards.find((b) => b.id === boardId);
+              if (!board) return state;
+
+              const newColumns = Array.from(board.columns);
+              const [removed] = newColumns.splice(sourceIndex, 1);
+              newColumns.splice(destinationIndex, 0, removed);
+
+              // Update Firebase in the background
+              ColumnService.moveColumn(boardId, newColumns).catch((error) => {
+                console.error("Error moving column:", error);
+                // You might want to show a toast notification here
+              });
+
+              return {
+                boards: state.boards.map((b) =>
+                  b.id === boardId ? { ...b, columns: newColumns } : b
+                ),
+                activeBoard:
+                  state.activeBoard?.id === boardId
+                    ? { ...state.activeBoard, columns: newColumns }
+                    : state.activeBoard,
+                isLoading: false,
+              };
+            });
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
         },
 
         addCard: (boardId, columnId, cardData) => {
