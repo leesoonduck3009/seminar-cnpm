@@ -46,7 +46,6 @@ function initializeFirebaseAdmin() {
     const serviceAccount = JSON.parse(
       fs.readFileSync(serviceAccountPath, "utf8")
     );
-    console.log("serviceAccount", serviceAccount);
     // Khởi tạo Firebase Admin SDK
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
