@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import React, { useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import { PlusCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import HeaderHome from "@/components/home/HeaderHome";
-import SideBar from "@/components/home/SideBar";
-import Column from "@/components/home/ColumnComponent";
-import BoardHeader from "@/components/home/BoardHeader";
-import { StrictModeDroppable } from "@/components/StrictModeDroppable";
-import useBoardStore, { useHydrateStore } from "@/store/useBoardStore";
-import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
-import type { Card } from "@/types/card";
-import type { Board } from "@/types/board";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useState, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { PlusCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import HeaderHome from '@/components/home/HeaderHome';
+import SideBar from '@/components/home/SideBar';
+import Column from '@/components/home/ColumnComponent';
+import BoardHeader from '@/components/home/BoardHeader';
+import { StrictModeDroppable } from '@/components/StrictModeDroppable';
+import useBoardStore, { useHydrateStore } from '@/store/useBoardStore';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import type { Card } from '@/types/card';
+import type { Board } from '@/types/board';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoadingState = () => (
-  <div className="min-h-screen bg-pink-100">
+  <div className='min-h-screen bg-pink-100'>
     <HeaderHome />
-    <div className="flex flex-col lg:flex-row">
-      <SideBar className="w-full lg:w-64 flex-shrink-0" />
-      <div className="flex-1 p-6 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-gray-600">Loading board...</p>
+    <div className='flex flex-col lg:flex-row'>
+      <SideBar className='w-full lg:w-64 flex-shrink-0' />
+      <div className='flex-1 p-6 flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4' />
+          <p className='text-gray-600'>Loading board...</p>
         </div>
       </div>
     </div>
@@ -34,19 +34,19 @@ const LoadingState = () => (
 );
 
 const BoardNotFoundState = ({ onBack }: { onBack: () => void }) => (
-  <div className="min-h-screen bg-pink-100">
+  <div className='min-h-screen bg-pink-100'>
     <HeaderHome />
-    <div className="flex flex-col lg:flex-row">
-      <SideBar className="w-full lg:w-64 flex-shrink-0" />
-      <div className="flex-1 p-6 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">
+    <div className='flex flex-col lg:flex-row'>
+      <SideBar className='w-full lg:w-64 flex-shrink-0' />
+      <div className='flex-1 p-6 flex items-center justify-center'>
+        <div className='text-center'>
+          <h2 className='text-xl font-semibold text-gray-700 mb-2'>
             Board not found
           </h2>
-          <p className="text-gray-500 mb-4">
+          <p className='text-gray-500 mb-4'>
             The board you're looking for doesn't exist or has been deleted.
           </p>
-          <Button onClick={onBack} variant="default">
+          <Button onClick={onBack} variant='default'>
             Go back to Boards
           </Button>
         </div>
@@ -70,7 +70,7 @@ const BoardDetailPage = () => {
   //   }
   // }, [currentUser, router]);
   // Local state
-  const [newColumnTitle, setNewColumnTitle] = useState("");
+  const [newColumnTitle, setNewColumnTitle] = useState('');
   const [isAddingColumn, setIsAddingColumn] = useState(false);
 
   // Store selectors
@@ -96,11 +96,11 @@ const BoardDetailPage = () => {
 
       const board = boards.find((b) => b.id === boardId);
       if (!board) {
-        router.push("/boards");
+        router.push('/boards');
         toast({
-          title: "Error",
-          description: "Board not found",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Board not found',
+          variant: 'destructive',
         });
         return;
       }
@@ -122,7 +122,7 @@ const BoardDetailPage = () => {
     if (activeBoard.backgroundImage) {
       return {
         className:
-          "bg-cover bg-center h-screen flex flex-col transition-all duration-300",
+          'bg-cover bg-center h-screen flex flex-col transition-all duration-300',
         style: {
           backgroundImage: `url(${activeBoard.backgroundImage})`,
         },
@@ -148,7 +148,7 @@ const BoardDetailPage = () => {
         return;
       }
 
-      if (type === "column") {
+      if (type === 'column') {
         moveColumn(boardId, source.index, destination.index);
         return;
       }
@@ -172,16 +172,16 @@ const BoardDetailPage = () => {
       setIsAddingColumn(true);
       try {
         await addColumn(boardId, newColumnTitle);
-        setNewColumnTitle("");
+        setNewColumnTitle('');
         toast({
-          title: "Success",
-          description: "Column added successfully",
+          title: 'Success',
+          description: 'Column added successfully',
         });
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to add column",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Failed to add column',
+          variant: 'destructive',
         });
       } finally {
         setIsAddingColumn(false);
@@ -195,14 +195,14 @@ const BoardDetailPage = () => {
       try {
         await addCard(boardId, columnId, { title });
         toast({
-          title: "Success",
-          description: "Card added successfully",
+          title: 'Success',
+          description: 'Card added successfully',
         });
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to add card",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Failed to add card',
+          variant: 'destructive',
         });
       }
     },
@@ -215,9 +215,9 @@ const BoardDetailPage = () => {
         updateCard(boardId, columnId, cardId, cardData);
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to update card",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Failed to update card',
+          variant: 'destructive',
         });
       }
     },
@@ -229,14 +229,14 @@ const BoardDetailPage = () => {
       try {
         await deleteCard(boardId, columnId, cardId);
         toast({
-          title: "Success",
-          description: "Card deleted successfully",
+          title: 'Success',
+          description: 'Card deleted successfully',
         });
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to delete card",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Failed to delete card',
+          variant: 'destructive',
         });
       }
     },
@@ -251,7 +251,7 @@ const BoardDetailPage = () => {
   // Show not found state if board doesn't exist
   const board = boards.find((b) => b.id === boardId);
   if (!board) {
-    return <BoardNotFoundState onBack={() => router.push("/boards")} />;
+    return <BoardNotFoundState onBack={() => router.push('/boards')} />;
   }
 
   // Main render
@@ -263,22 +263,22 @@ const BoardDetailPage = () => {
       style={getBackgroundStyle().style}
     >
       <HeaderHome />
-      <div className="flex-1 flex overflow-hidden">
+      <div className='flex-1 flex overflow-hidden'>
         <SideBar />
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className='flex-1 flex flex-col overflow-hidden'>
           <BoardHeader />
           <DragDropContext onDragEnd={handleDragEnd}>
-            <main className="flex-1 p-4 overflow-x-auto overflow-y-auto">
+            <main className='flex-1 p-4 overflow-x-auto overflow-y-auto'>
               <StrictModeDroppable
-                droppableId="all-columns"
-                direction="horizontal"
-                type="column"
+                droppableId='all-columns'
+                direction='horizontal'
+                type='column'
               >
                 {(provided) => (
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className="flex gap-4 items-start min-h-[calc(100%-1rem)]"
+                    className='flex gap-4 items-start min-h-[calc(100%-1rem)]'
                   >
                     {activeBoard.columns.map((column, index) => (
                       <Column
@@ -298,15 +298,15 @@ const BoardDetailPage = () => {
                     ))}
                     {provided.placeholder}
 
-                    <div className="w-72 flex-shrink-0">
-                      <div className="bg-white/50 hover:bg-white/80 transition-colors rounded-lg p-4 shadow">
+                    <div className='w-72 flex-shrink-0'>
+                      <div className='bg-white/50 hover:bg-white/80 transition-colors rounded-lg p-4 shadow'>
                         <Input
-                          placeholder="Enter list title..."
+                          placeholder='Nhập tên thẻ'
                           value={newColumnTitle}
                           onChange={(e) => setNewColumnTitle(e.target.value)}
-                          className="mb-2"
+                          className='mb-2'
                           onKeyDown={(e) => {
-                            if (e.key === "Enter" && newColumnTitle.trim()) {
+                            if (e.key === 'Enter' && newColumnTitle.trim()) {
                               handleAddColumn(e);
                             }
                           }}
@@ -314,11 +314,11 @@ const BoardDetailPage = () => {
                         <Button
                           onClick={handleAddColumn}
                           disabled={!newColumnTitle.trim() || isAddingColumn}
-                          className="w-full flex items-center justify-center"
-                          variant="secondary"
+                          className='w-full flex items-center justify-center'
+                          variant='secondary'
                         >
-                          <PlusCircle className="w-4 h-4 mr-2" />
-                          Add List
+                          <PlusCircle className='w-4 h-4 mr-2' />
+                          Thêm danh sách thẻ
                         </Button>
                       </div>
                     </div>
