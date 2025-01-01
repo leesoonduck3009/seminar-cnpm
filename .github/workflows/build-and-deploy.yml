@@ -14,10 +14,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install Firebase dependencies
+        working-directory: BE
+        run: npm install
+        
       - name: Install dependencies
         working-directory: BE/functions
         run: npm install
-        
+
       - name: Deploy to Firebase
         working-directory: BE/functions
         run: npm run deploy
