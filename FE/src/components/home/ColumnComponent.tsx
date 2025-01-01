@@ -210,7 +210,7 @@ const Column = ({
                     ref={textareaRef}
                     value={newCardContent}
                     onChange={(e) => setNewCardContent(e.target.value)}
-                    placeholder='Nhập tiêu đề cho thẻ'
+                    placeholder='Enter a title for this card...'
                     className='w-full min-h-[60px] p-2 text-sm border rounded-md mb-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400'
                     onKeyDown={handleKeyDown}
                   />
@@ -220,7 +220,7 @@ const Column = ({
                       size='sm'
                       disabled={!newCardContent.trim() || isSubmitting}
                     >
-                      {isSubmitting ? 'Đang thêm...' : 'Thêm thẻ'}
+                      {isSubmitting ? 'Adding...' : 'Add Card'}
                     </Button>
                     <Button
                       type='button'
@@ -240,7 +240,7 @@ const Column = ({
                   onClick={() => setIsAddingCard(true)}
                 >
                   <PlusCircle className='w-4 h-4 mr-2' />
-                  Thêm thẻ
+                  Add Card
                 </Button>
               )}
             </div>
