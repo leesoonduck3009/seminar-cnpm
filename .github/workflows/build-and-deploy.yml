@@ -13,11 +13,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      
+        
       - name: Create env file
         working-directory: BE/functions
-        run: |
+        run: 
           echo "SERVICE_ACCOUNT_KEY=${{SERVICE_ACCOUNT_KEY}}"
 
      
