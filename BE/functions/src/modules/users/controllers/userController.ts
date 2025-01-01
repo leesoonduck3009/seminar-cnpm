@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import * as userService from "../services/userService";
-import { User } from "../models/user";
-import { ApiResponse } from "../models/dto/ApiResponse";
-import { OptCheckRequest } from "../models/dto/OtpCheckDto";
+import { User } from "../models/User/user";
+import { OptCheckRequest } from "../models/OtpCheckDto";
+import { ApiResponse } from "../models/ApiResponse";
 // import { UserRegisterDetail } from "../models/dto/User/userRegisteDetailDto";
 // import { ApiResponse } from "../models/dto/ApiResponse";
 // import { StatusCode } from "../enums/StatusCode";
@@ -37,29 +37,17 @@ export const SendEmailToUser = async (req: Request, res: Response) => {
     res.status(500).json(response);
   }
 };
-export const SendOTPCodeToUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { email } = req.body;
-    const response = new ApiResponse(
-      await userService.SendOTPCheckingEmail(email),
-      true,
-      null,
-      200
-    );
-    res.status(200).json(response);
-  } catch (e) {
-    next(e);
-  }
+export const SendOTPCodeToUser = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const response = new ApiResponse(
+    await userService.SendOTPCheckingEmail(email),
+    true,
+    null,
+    200
+  );
+  res.status(200).json(response);
 };
-export const CheckOtpCode = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const CheckOtpCode = async (req: Request, res: Response) => {
   try {
     const request = req.body as OptCheckRequest;
     const response = new ApiResponse(
@@ -70,25 +58,20 @@ export const CheckOtpCode = async (
     );
     res.status(200).json(response);
   } catch (e) {
-    next(e);
+    const errorMessage =
+      e instanceof Error ? e.message : "An unexpected error occurred";
+    const response = new ApiResponse(await null, false, errorMessage, 500);
+    res.status(500).json(response);
   }
 };
-export const CreateUserAccount = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    // const request = req.body as UserRegisterDetail;
-    const response = new ApiResponse(
-      // await userService.CreateNewUser(request),
-      null,
-      true,
-      null,
-      200
-    );
-    res.status(200).json(response);
-  } catch (e) {
-    next(e);
-  }
+export const CreateUserAccount = async (req: Request, res: Response) => {
+  // const request = req.body as UserRegisterDetail;
+  const response = new ApiResponse(
+    // await userService.CreateNewUser(request),
+    null,
+    true,
+    null,
+    200
+  );
+  res.status(200).json(response);
 };

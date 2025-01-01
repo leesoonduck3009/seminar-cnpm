@@ -53,7 +53,6 @@ const Page = () => {
     const email = localStorage.getItem("email");
     const request: OptCheckRequest = new OptCheckRequest(email!, value);
     const response = await RegisterUserCheckOtp(request);
-    console.log("response", response);
     if (response.isSuccess) {
       window.location.href = "/signup-pass";
     } else {

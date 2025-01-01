@@ -9,11 +9,6 @@ const page = () => {
   const router = useRouter();
   const { currentUser, loading } = useAuth();
 
-  useEffect(() => {
-    if (currentUser) {
-      router.push("/boards");
-    }
-  }, [currentUser, router]);
   const [name, setName] = React.useState("");
   const handlerSignupInfo = async () => {
     await RegisterUserCreateDetail(name);

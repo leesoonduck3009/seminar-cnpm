@@ -17,6 +17,8 @@ import useBoardStore from "@/store/useBoardStore";
 import type { Board } from "@/types/board";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { db } from "@/helpers/firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 const BoardsPage = () => {
   const router = useRouter();
@@ -38,7 +40,6 @@ const BoardsPage = () => {
       const newBoard = addBoard(boardData);
       // Wait for the next tick to ensure store is updated
       await Promise.resolve();
-
       // Navigate to the new board
       router.push(`/board/${newBoard.id}`);
 

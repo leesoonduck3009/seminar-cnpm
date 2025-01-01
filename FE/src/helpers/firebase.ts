@@ -16,7 +16,4 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const firebaseFunction = getFunctions(app);
-connectAuthEmulator(auth, "http://127.0.0.1:9099");
-connectFirestoreEmulator(db, "127.0.0.1", 8085);
-connectFunctionsEmulator(firebaseFunction, "127.0.0.1", 5001);
 export { auth, db, firebaseFunction };

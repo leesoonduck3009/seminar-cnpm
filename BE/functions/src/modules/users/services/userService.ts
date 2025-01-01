@@ -1,15 +1,15 @@
-import { User } from "../models/user";
 import { Firestore } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
 import dotenv from "dotenv";
-import * as mailService from "./mailService";
+import * as mailService from "../../../services/mailService";
 import { OTPCheckRegister } from "../models/otpCheck";
-import { OptCheckRequest, OptCheckResponse } from "../models/dto/OtpCheckDto";
+import { OptCheckRequest, OptCheckResponse } from "../models/OtpCheckDto";
 import {
   InvalidModelError,
   NotFoundError,
   UnauthorizeError,
-} from "../Errors/errors";
+} from "../models/ApiResponse";
+import { User } from "../models/User/user";
 dotenv.config();
 const db = new Firestore();
 export const createNewUser = async (
@@ -88,7 +88,7 @@ export const SendOTPCheckingEmail = async (email: string): Promise<string> => {
 export const CheckOTPRegister = async (
   request: OptCheckRequest
 ): Promise<OptCheckResponse> => {
-  console.log("Mã OTP");
+  console.log("Mã OTP", request.OtpCode);
   const doc = await admin
     .firestore()
     .collection(OTPCheckRegister.name)
@@ -141,13 +141,14 @@ export const CheckOTPRegister = async (
       IsUsed: otpCheck.IsUsed,
     });
   // Tạo tài khoản người dùng
-  const userRecord = await admin.auth().createUser({
-    email: request.email,
-    emailVerified: true,
-  });
-  console.log("Mã OTP hợp lệ.");
-  const token = await admin.auth().createCustomToken(userRecord.uid);
-  return new OptCheckResponse(userRecord.uid, token);
+  // const userRecord = await admin.auth().createUser({
+  //   email: request.email,
+  //   emailVerified: true,
+  // });
+  // console.log("Mã OTP hợp lệ.");
+  // const token = await admin.auth().createCustomToken(userRecord.uid);
+  // console.log("Token", token);
+  return new OptCheckResponse("userRecord.uid", "token");
 };
 function generateOTP(length = 6): string {
   let otp = "";
