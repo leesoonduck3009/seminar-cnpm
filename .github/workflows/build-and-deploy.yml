@@ -1,31 +1,29 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
     branches: ["master"]
   pull_request:
     branches: ["master"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Download deps
+      - name: Install dependencies
         working-directory: BE/functions
         run: npm install
 
-      - name: Deploy
+      - name: Create .env file
+        working-directory: BE/functions
+        run: |
+          echo SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }} > .env
+
+      - name: Deploy to Firebase
         working-directory: BE
         run: npx firebase-tools deploy
         env:
