@@ -21,10 +21,12 @@ jobs:
       - name: Install dependencies
         working-directory: BE/functions
         run: npm install
-      - name: create env file
+        
+      - name: Create env file
+        working-directory: BE/functions
         run: |
-          touch .env
-          echo SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }} >> .env
+          echo "SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }}" > .env
+
       - name: Deploy to Firebase
         working-directory: BE/functions
         run: npm run deploy
