@@ -60,15 +60,15 @@ const BoardDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const boardId = parseInt(params.id as string);
+  const boardId = params.id as string;
   const hydrated = useHydrateStore();
   const { currentUser, loading } = useAuth();
 
-  React.useEffect(() => {
-    if (!currentUser) {
-      router.push("/login");
-    }
-  }, [currentUser, router]);
+  // React.useEffect(() => {
+  //   if (!currentUser) {
+  //     router.push("/login");
+  //   }
+  // }, [currentUser, router]);
   // Local state
   const [newColumnTitle, setNewColumnTitle] = useState("");
   const [isAddingColumn, setIsAddingColumn] = useState(false);
