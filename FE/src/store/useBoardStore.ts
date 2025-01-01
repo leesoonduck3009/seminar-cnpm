@@ -1,4 +1,5 @@
 // store/useBoardStore.ts
+import { CardService } from "@/services/cardService";
 import { ColumnService } from "@/services/columnService";
 import { Board } from "@/types/board";
 import { Card, Label, Activity } from "@/types/card";
@@ -226,31 +227,6 @@ const useBoardStore = create<BoardState>()(
         getBoardById: (boardId) => {
           return get().boards.find((board) => board.id === boardId);
         },
-
-        // addColumn: (boardId, title) => {
-        //   const newColumn: Column = {
-        //     id: `column-${Date.now()}`,
-        //     title,
-        //     cards: [],
-        //     createdAt: new Date().toISOString(),
-        //     updatedAt: new Date().toISOString(),
-        //   };
-
-        //   set((state) => ({
-        //     boards: state.boards.map((board) =>
-        //       board.id === boardId
-        //         ? { ...board, columns: [...board.columns, newColumn] }
-        //         : board
-        //     ),
-        //     activeBoard:
-        //       state.activeBoard?.id === boardId
-        //         ? {
-        //             ...state.activeBoard,
-        //             columns: [...state.activeBoard.columns, newColumn],
-        //           }
-        //         : state.activeBoard,
-        //   }));
-        // },
         addColumn: async (boardId: string, title: string) => {
           try {
             set({ isLoading: true, error: null });
@@ -279,42 +255,6 @@ const useBoardStore = create<BoardState>()(
             throw error;
           }
         },
-
-        // updateColumn: (boardId, columnId, data) => {
-        //   set((state) => ({
-        //     boards: state.boards.map((board) =>
-        //       board.id === boardId
-        //         ? {
-        //             ...board,
-        //             columns: board.columns.map((column) =>
-        //               column.id === columnId
-        //                 ? {
-        //                     ...column,
-        //                     ...data,
-        //                     updatedAt: new Date().toISOString(),
-        //                   }
-        //                 : column
-        //             ),
-        //           }
-        //         : board
-        //     ),
-        //     activeBoard:
-        //       state.activeBoard?.id === boardId
-        //         ? {
-        //             ...state.activeBoard,
-        //             columns: state.activeBoard.columns.map((column) =>
-        //               column.id === columnId
-        //                 ? {
-        //                     ...column,
-        //                     ...data,
-        //                     updatedAt: new Date().toISOString(),
-        //                   }
-        //                 : column
-        //             ),
-        //           }
-        //         : state.activeBoard,
-        //   }));
-        // },
 
         updateColumn: async (
           boardId: string,
@@ -360,30 +300,6 @@ const useBoardStore = create<BoardState>()(
           }
         },
 
-        // deleteColumn: (boardId, columnId) => {
-        //   set((state) => ({
-        //     boards: state.boards.map((board) =>
-        //       board.id === boardId
-        //         ? {
-        //             ...board,
-        //             columns: board.columns.filter(
-        //               (column) => column.id !== columnId
-        //             ),
-        //           }
-        //         : board
-        //     ),
-        //     activeBoard:
-        //       state.activeBoard?.id === boardId
-        //         ? {
-        //             ...state.activeBoard,
-        //             columns: state.activeBoard.columns.filter(
-        //               (column) => column.id !== columnId
-        //             ),
-        //           }
-        //         : state.activeBoard,
-        //   }));
-        // },
-
         deleteColumn: async (boardId: string, columnId: string) => {
           try {
             set({ isLoading: true, error: null });
@@ -417,27 +333,6 @@ const useBoardStore = create<BoardState>()(
             throw error;
           }
         },
-
-        // moveColumn: (boardId, sourceIndex, destinationIndex) => {
-        //   set((state) => {
-        //     const board = state.boards.find((b) => b.id === boardId);
-        //     if (!board) return state;
-
-        //     const newColumns = Array.from(board.columns);
-        //     const [removed] = newColumns.splice(sourceIndex, 1);
-        //     newColumns.splice(destinationIndex, 0, removed);
-
-        //     return {
-        //       boards: state.boards.map((b) =>
-        //         b.id === boardId ? { ...b, columns: newColumns } : b
-        //       ),
-        //       activeBoard:
-        //         state.activeBoard?.id === boardId
-        //           ? { ...state.activeBoard, columns: newColumns }
-        //           : state.activeBoard,
-        //     };
-        //   });
-        // },
 
         moveColumn: async (
           boardId: string,
@@ -478,169 +373,349 @@ const useBoardStore = create<BoardState>()(
           }
         },
 
-        addCard: (boardId, columnId, cardData) => {
-          const newCard: Card = {
-            id: `card-${Date.now()}`,
-            title: cardData.title || "",
-            description: "",
-            labels: [],
-            attachments: [],
-            comments: [],
-            activities: [],
-            members: [],
-            isArchived: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            createdBy: "current-user-id",
-            ...cardData,
-          };
+        // addCard: (boardId, columnId, cardData) => {
+        //   const newCard: Card = {
+        //     id: `card-${Date.now()}`,
+        //     title: cardData.title || "",
+        //     description: "",
+        //     labels: [],
+        //     attachments: [],
+        //     comments: [],
+        //     activities: [],
+        //     members: [],
+        //     isArchived: false,
+        //     createdAt: new Date().toISOString(),
+        //     updatedAt: new Date().toISOString(),
+        //     createdBy: "current-user-id",
+        //     ...cardData,
+        //   };
 
-          set((state) => {
-            const updateColumns = (columns: Column[]) =>
-              columns.map((column) =>
-                column.id === columnId
-                  ? { ...column, cards: [...column.cards, newCard] }
-                  : column
-              );
+        //   set((state) => {
+        //     const updateColumns = (columns: Column[]) =>
+        //       columns.map((column) =>
+        //         column.id === columnId
+        //           ? { ...column, cards: [...column.cards, newCard] }
+        //           : column
+        //       );
 
-            return {
-              boards: state.boards.map((board) =>
-                board.id === boardId
-                  ? { ...board, columns: updateColumns(board.columns) }
-                  : board
-              ),
-              activeBoard:
-                state.activeBoard?.id === boardId
-                  ? {
-                      ...state.activeBoard,
-                      columns: updateColumns(state.activeBoard.columns),
-                    }
-                  : state.activeBoard,
-            };
-          });
-        },
+        //     return {
+        //       boards: state.boards.map((board) =>
+        //         board.id === boardId
+        //           ? { ...board, columns: updateColumns(board.columns) }
+        //           : board
+        //       ),
+        //       activeBoard:
+        //         state.activeBoard?.id === boardId
+        //           ? {
+        //               ...state.activeBoard,
+        //               columns: updateColumns(state.activeBoard.columns),
+        //             }
+        //           : state.activeBoard,
+        //     };
+        //   });
+        // },
+        addCard: async (boardId, columnId, cardData) => {
+          try {
+            set({ isLoading: true, error: null });
 
-        updateCard: (
-          boardId: string,
-          columnId: string,
-          cardId: string,
-          data: Partial<Card>
-        ) => {
-          set((state) => {
-            const updateColumns = (columns: Column[]) =>
-              columns.map((column) =>
-                column.id === columnId
-                  ? {
-                      ...column,
-                      cards: column.cards.map((card) =>
-                        card.id === cardId ? { ...card, ...data } : card
-                      ),
-                    }
-                  : column
-              );
-
-            const updatedBoards = state.boards.map((board) =>
-              board.id === boardId
-                ? { ...board, columns: updateColumns(board.columns) }
-                : board
+            const newCard = await CardService.createCard(
+              boardId,
+              columnId,
+              cardData
             );
 
-            return {
-              boards: updatedBoards,
-              activeBoard:
-                state.activeBoard?.id === boardId
-                  ? {
-                      ...state.activeBoard,
-                      columns: updateColumns(state.activeBoard.columns),
-                    }
-                  : state.activeBoard,
-            };
-          });
+            set((state) => {
+              const updateColumns = (columns: Column[]) =>
+                columns.map((column) =>
+                  column.id === columnId
+                    ? { ...column, cards: [...column.cards, newCard] }
+                    : column
+                );
+
+              return {
+                boards: state.boards.map((board) =>
+                  board.id === boardId
+                    ? { ...board, columns: updateColumns(board.columns) }
+                    : board
+                ),
+                activeBoard:
+                  state.activeBoard?.id === boardId
+                    ? {
+                        ...state.activeBoard,
+                        columns: updateColumns(state.activeBoard.columns),
+                      }
+                    : state.activeBoard,
+                isLoading: false,
+              };
+            });
+
+            return newCard;
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
         },
 
-        deleteCard: (boardId, columnId, cardId) => {
-          set((state) => {
-            const updateColumns = (columns: Column[]) =>
-              columns.map((column) =>
-                column.id === columnId
-                  ? {
-                      ...column,
-                      cards: column.cards.filter((card) => card.id !== cardId),
-                    }
-                  : column
-              );
+        // updateCard: (
+        //   boardId: string,
+        //   columnId: string,
+        //   cardId: string,
+        //   data: Partial<Card>
+        // ) => {
+        //   set((state) => {
+        //     const updateColumns = (columns: Column[]) =>
+        //       columns.map((column) =>
+        //         column.id === columnId
+        //           ? {
+        //               ...column,
+        //               cards: column.cards.map((card) =>
+        //                 card.id === cardId ? { ...card, ...data } : card
+        //               ),
+        //             }
+        //           : column
+        //       );
 
-            return {
-              boards: state.boards.map((board) =>
-                board.id === boardId
-                  ? { ...board, columns: updateColumns(board.columns) }
-                  : board
-              ),
-              activeBoard:
-                state.activeBoard?.id === boardId
-                  ? {
-                      ...state.activeBoard,
-                      columns: updateColumns(state.activeBoard.columns),
-                    }
-                  : state.activeBoard,
-            };
-          });
+        //     const updatedBoards = state.boards.map((board) =>
+        //       board.id === boardId
+        //         ? { ...board, columns: updateColumns(board.columns) }
+        //         : board
+        //     );
+
+        //     return {
+        //       boards: updatedBoards,
+        //       activeBoard:
+        //         state.activeBoard?.id === boardId
+        //           ? {
+        //               ...state.activeBoard,
+        //               columns: updateColumns(state.activeBoard.columns),
+        //             }
+        //           : state.activeBoard,
+        //     };
+        //   });
+        // },
+        updateCard: async (boardId, columnId, cardId, data) => {
+          try {
+            set({ isLoading: true, error: null });
+
+            await CardService.updateCard(boardId, columnId, cardId, data);
+
+            set((state) => {
+              const updateColumns = (columns: Column[]) =>
+                columns.map((column) =>
+                  column.id === columnId
+                    ? {
+                        ...column,
+                        cards: column.cards.map((card) =>
+                          card.id === cardId
+                            ? {
+                                ...card,
+                                ...data,
+                                updatedAt: new Date().toISOString(),
+                              }
+                            : card
+                        ),
+                      }
+                    : column
+                );
+
+              return {
+                boards: state.boards.map((board) =>
+                  board.id === boardId
+                    ? { ...board, columns: updateColumns(board.columns) }
+                    : board
+                ),
+                activeBoard:
+                  state.activeBoard?.id === boardId
+                    ? {
+                        ...state.activeBoard,
+                        columns: updateColumns(state.activeBoard.columns),
+                      }
+                    : state.activeBoard,
+                isLoading: false,
+              };
+            });
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
         },
 
-        moveCard: (
+        moveCard: async (
           boardId,
           sourceColumnId,
           destinationColumnId,
           sourceIndex,
           destinationIndex
         ) => {
-          set((state) => {
-            const board = state.boards.find((b) => b.id === boardId);
-            if (!board) return state;
+          try {
+            set({ isLoading: true, error: null });
 
-            const newBoard = { ...board };
-            const sourceColumn = newBoard.columns.find(
-              (c) => c.id === sourceColumnId
+            await CardService.moveCard(
+              boardId,
+              sourceColumnId,
+              destinationColumnId,
+              sourceIndex,
+              destinationIndex
             );
-            const destinationColumn = newBoard.columns.find(
-              (c) => c.id === destinationColumnId
-            );
 
-            if (!sourceColumn || !destinationColumn) return state;
+            set((state) => {
+              const board = state.boards.find((b) => b.id === boardId);
+              if (!board) return state;
 
-            // Create a copy of the card to be moved
-            const [movedCard] = sourceColumn.cards.splice(sourceIndex, 1);
+              const newBoard = { ...board };
+              const sourceColumn = newBoard.columns.find(
+                (c) => c.id === sourceColumnId
+              );
+              const destinationColumn = newBoard.columns.find(
+                (c) => c.id === destinationColumnId
+              );
 
-            // Add activity for the move
-            const activity: Activity = {
-              id: `activity-${Date.now()}`,
-              type: "move",
-              content:
-                sourceColumnId === destinationColumnId
-                  ? "reordered this card"
-                  : `moved from ${sourceColumn.title} to ${destinationColumn.title}`,
-              createdAt: new Date().toISOString(),
-              author: {
-                id: "current-user-id",
-                name: "Current User",
-                email: "current-user",
-              },
-            };
+              if (!sourceColumn || !destinationColumn) return state;
 
-            movedCard.activities = [...movedCard.activities, activity];
-            destinationColumn.cards.splice(destinationIndex, 0, movedCard);
+              const [movedCard] = sourceColumn.cards.splice(sourceIndex, 1);
+              destinationColumn.cards.splice(destinationIndex, 0, movedCard);
 
-            return {
-              boards: state.boards.map((b) =>
-                b.id === boardId ? newBoard : b
-              ),
-              activeBoard:
-                state.activeBoard?.id === boardId
-                  ? newBoard
-                  : state.activeBoard,
-            };
-          });
+              return {
+                boards: state.boards.map((b) =>
+                  b.id === boardId ? newBoard : b
+                ),
+                activeBoard:
+                  state.activeBoard?.id === boardId
+                    ? newBoard
+                    : state.activeBoard,
+                isLoading: false,
+              };
+            });
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
         },
+
+        deleteCard: async (boardId, columnId, cardId) => {
+          try {
+            set({ isLoading: true, error: null });
+
+            await CardService.deleteCard(boardId, columnId, cardId);
+
+            set((state) => {
+              const updateColumns = (columns: Column[]) =>
+                columns.map((column) =>
+                  column.id === columnId
+                    ? {
+                        ...column,
+                        cards: column.cards.filter(
+                          (card) => card.id !== cardId
+                        ),
+                      }
+                    : column
+                );
+
+              return {
+                boards: state.boards.map((board) =>
+                  board.id === boardId
+                    ? { ...board, columns: updateColumns(board.columns) }
+                    : board
+                ),
+                activeBoard:
+                  state.activeBoard?.id === boardId
+                    ? {
+                        ...state.activeBoard,
+                        columns: updateColumns(state.activeBoard.columns),
+                      }
+                    : state.activeBoard,
+                isLoading: false,
+              };
+            });
+          } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            throw error;
+          }
+        },
+
+        // deleteCard: (boardId, columnId, cardId) => {
+        //   set((state) => {
+        //     const updateColumns = (columns: Column[]) =>
+        //       columns.map((column) =>
+        //         column.id === columnId
+        //           ? {
+        //               ...column,
+        //               cards: column.cards.filter((card) => card.id !== cardId),
+        //             }
+        //           : column
+        //       );
+
+        //     return {
+        //       boards: state.boards.map((board) =>
+        //         board.id === boardId
+        //           ? { ...board, columns: updateColumns(board.columns) }
+        //           : board
+        //       ),
+        //       activeBoard:
+        //         state.activeBoard?.id === boardId
+        //           ? {
+        //               ...state.activeBoard,
+        //               columns: updateColumns(state.activeBoard.columns),
+        //             }
+        //           : state.activeBoard,
+        //     };
+        //   });
+        // },
+
+        // moveCard: (
+        //   boardId,
+        //   sourceColumnId,
+        //   destinationColumnId,
+        //   sourceIndex,
+        //   destinationIndex
+        // ) => {
+        //   set((state) => {
+        //     const board = state.boards.find((b) => b.id === boardId);
+        //     if (!board) return state;
+
+        //     const newBoard = { ...board };
+        //     const sourceColumn = newBoard.columns.find(
+        //       (c) => c.id === sourceColumnId
+        //     );
+        //     const destinationColumn = newBoard.columns.find(
+        //       (c) => c.id === destinationColumnId
+        //     );
+
+        //     if (!sourceColumn || !destinationColumn) return state;
+
+        //     // Create a copy of the card to be moved
+        //     const [movedCard] = sourceColumn.cards.splice(sourceIndex, 1);
+
+        //     // Add activity for the move
+        //     const activity: Activity = {
+        //       id: `activity-${Date.now()}`,
+        //       type: "move",
+        //       content:
+        //         sourceColumnId === destinationColumnId
+        //           ? "reordered this card"
+        //           : `moved from ${sourceColumn.title} to ${destinationColumn.title}`,
+        //       createdAt: new Date().toISOString(),
+        //       author: {
+        //         id: "current-user-id",
+        //         name: "Current User",
+        //         email: "current-user",
+        //       },
+        //     };
+
+        //     movedCard.activities = [...movedCard.activities, activity];
+        //     destinationColumn.cards.splice(destinationIndex, 0, movedCard);
+
+        //     return {
+        //       boards: state.boards.map((b) =>
+        //         b.id === boardId ? newBoard : b
+        //       ),
+        //       activeBoard:
+        //         state.activeBoard?.id === boardId
+        //           ? newBoard
+        //           : state.activeBoard,
+        //     };
+        //   });
+        // },
 
         archiveCard: (boardId, columnId, cardId) => {
           const activity: Activity = {
