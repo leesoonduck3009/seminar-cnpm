@@ -100,12 +100,12 @@ export const RegisterUserCreatePassword = async (
 export const RegisterUserCreateDetail = async (
   displayName: string
 ): Promise<boolean> => {
-  if (!auth.currentUser) {
-    const token = localStorage.getItem("token");
-    await signInWithCustomToken(auth, token!);
-    if (!auth.currentUser) throw new Error("Unauthenticated");
-  }
-  if (auth.currentUser.uid)
+  // if (!auth.currentUser) {
+  //   const token = localStorage.getItem("token");
+  //   await signInWithCustomToken(auth, token!);
+  //   if (!auth.currentUser) throw new Error("Unauthenticated");
+  // }
+  if (auth.currentUser?.uid)
     await updateProfile(auth.currentUser, {
       displayName: displayName,
     });

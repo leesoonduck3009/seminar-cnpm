@@ -1,4 +1,4 @@
-import { db } from "@/helpers/firebase";
+import { auth, db } from "@/helpers/firebase";
 import { Board } from "@/types/board";
 import { BoardMember } from "@/types/user";
 import {
@@ -64,7 +64,7 @@ export class BoardService {
       // Prepare board data
       const newBoard = {
         ...boardData,
-        createdBy: userId,
+        createdBy: auth.currentUser?.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         members: [initialMember],
@@ -98,8 +98,8 @@ export class BoardService {
   static async getBoards(userId: string): Promise<Board[]> {
     try {
       const q = query(
-        this.boardsRef
-        // where("members", "array-contains", { id: userId })
+        this.boardsRef,
+        where("createBy", "==", auth.currentUser?.uid)
       );
 
       const querySnapshot = await getDocs(q);
