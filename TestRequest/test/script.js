@@ -11,7 +11,7 @@ export const options = {
 };
 
 export default function () {
-  const url = 'https://us-central1-rythm-party.cloudfunctions.net/helloWorld'; // Thay bằng URL của Firebase Function
+  const url = 'https://us-central1-rythm-party.cloudfunctions.net/heavyFunction'; // Thay bằng URL của Firebase Function
   const response = http.get(url);
 
   // Kiểm tra trạng thái phản hồi
