@@ -25,7 +25,7 @@ jobs:
       - name: Create env file
         working-directory: BE/functions
         run: |
-          echo "SSERVICE_ACCOUNT_KEY='${SERVICE_ACCOUNT_KEY}" > .env
+          echo "SERVICE_ACCOUNT_KEY='${SERVICE_ACCOUNT_KEY}" > .env
 
       - name: Deploy to Firebase
         working-directory: BE/functions
