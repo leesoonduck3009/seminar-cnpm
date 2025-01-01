@@ -16,8 +16,11 @@ import {
   CreateNewPasswordUser,
   CreateNewUserDetail,
 } from "./modules/users/services/userService";
-import serviceAccount from "./serviceAccountKey.json";
+import dotenv from "dotenv";
 
+// Load environment variables from .env file
+dotenv.config();
+const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY!);
 // Đảm bảo kiểu của serviceAccount là ServiceAccount
 
 app.use(cors({ origin: true }));
