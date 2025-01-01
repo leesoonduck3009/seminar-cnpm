@@ -17,6 +17,6 @@ jobs:
       - name: Create env file
         working-directory: BE/functions
         run: 
-          echo "SERVICE_ACCOUNT_KEY=${{SERVICE_ACCOUNT_KEY}}"
+          echo "SERVICE_ACCOUNT_KEY= ${{ secrets.SERVICE_ACCOUNT_KEY }}"
 
      
