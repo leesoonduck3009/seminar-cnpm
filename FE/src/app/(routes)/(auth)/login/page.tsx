@@ -2,13 +2,22 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { Login } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
 const LogInPage = () => {
   const { currentUser, loading } = useAuth();
   const router = useRouter();
-
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
+  const handleLoginPage = async () => {
+    const user = await Login(email, password);
+    if (user) {
+      router.push("/boards");
+    }
+  };
   useEffect(() => {
     if (currentUser) {
       router.push("/boards");
@@ -40,15 +49,24 @@ const LogInPage = () => {
           Đăng nhập để tiếp tục
         </h1>
         <Input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="border mb-3 border-[#B6c2cf]"
           placeholder="Nhập email của bạn"
         />
-        <a href="/login-confirmmail" className="w-full">
-          <Button className="bg-[#0052CC] mb-5 w-full font-semibold">
-            Tiếp tục
-          </Button>
-        </a>
-
+        <Input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          className="border mb-3 border-[#B6c2cf]"
+          placeholder="Nhập password của bạn"
+        />
+        <Button
+          className="bg-[#0052CC] mb-5 w-full font-semibold"
+          onClick={handleLoginPage}
+        >
+          Đăng nhập
+        </Button>
         <p className="font-semibold text-[13px] text-[#626262]">
           Hoặc tiếp tục với
         </p>

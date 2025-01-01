@@ -4,6 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { RegisterUserCreatePassword } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -11,15 +12,17 @@ const page = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { currentUser, loading } = useAuth();
+  const [password, setPassword] = useState("");
   const router = useRouter();
-
-  React.useEffect(() => {
-    if (currentUser) {
-      router.push("/boards");
+  const handlePasswordCreate = async () => {
+    if (!errorMessage) {
+      await RegisterUserCreatePassword(password);
+      router.push("/signup-info");
     }
-  }, [currentUser, router]);
+  };
   const handlePasswordChange = (event) => {
     const password = event.target.value;
+    setPassword(password);
     if (
       password.length < 8 ||
       !/[A-Z]/.test(password) ||
@@ -60,6 +63,7 @@ const page = () => {
           Tạo mật khẩu
         </h1>
         <Input
+          type="password"
           className={`border mb-3 border-[#B6c2cf] ${
             passwordError ? "border-red-500" : ""
           }`}
@@ -70,11 +74,12 @@ const page = () => {
           <div className="text-red-500 text-sm mt-1">{errorMessage}</div>
         )}
 
-        <a href="/signup-info" className="w-full">
-          <Button className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold">
-            Tiếp tục
-          </Button>
-        </a>
+        <Button
+          className="bg-[#0052CC]  mt-4 mb-5 w-full font-semibold"
+          onClick={handlePasswordCreate}
+        >
+          Tiếp tục
+        </Button>
       </div>
     </div>
   );

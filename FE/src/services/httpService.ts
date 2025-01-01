@@ -2,7 +2,8 @@ export class HttpService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = "http://127.0.0.1:5001/project-management-f27b0/us-central1";
+    this.baseUrl =
+      "https://us-central1-project-management-f27b0.cloudfunctions.net";
   }
 
   // Hàm dùng để xử lý response

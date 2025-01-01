@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { StatusCode } from "../enums/StatusCode";
-import { ApiError } from "../Errors/Errors";
-import { ApiResponse } from "../models/dto/ApiResponse";
+import { StatusCode } from "../../../enums/StatusCode";
+
+import { ApiError, ApiResponse } from "../models/ApiResponse";
 
 export const GlobalExceptionMiddleware = (
   err: Error,

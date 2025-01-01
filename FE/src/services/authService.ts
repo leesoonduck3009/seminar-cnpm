@@ -6,6 +6,7 @@ import {
   UserRegisterResponse,
 } from "@/models/auth";
 import {
+  createUserWithEmailAndPassword,
   signInWithCustomToken,
   signInWithEmailAndPassword,
   signOut,
@@ -22,11 +23,12 @@ export const RegisterUserSendOtp = async (
 ): Promise<ApiResponse<string>> => {
   try {
     const result = await httpService.post<ApiResponse<string>>(
-      "/User/api/send-otp",
+      "/SendOTPCodeToUser",
       {
         email: email,
       }
     );
+    localStorage.setItem("email", email);
     return result;
   } catch (error: any) {
     console.log(error);
@@ -45,20 +47,20 @@ export const RegisterUserCheckOtp = async (
   request: OptCheckRequest
 ): Promise<ApiResponse<OptCheckResponse>> => {
   try {
+    console.log("request", request);
     const result = await httpService.post<ApiResponse<OptCheckResponse>>(
-      "/User/api/check-otp",
+      "/CheckOtpCode",
       request
     );
     if (result.statusCode === 200) {
       console.log("token", result.data!.token);
-      const userCredential = await signInWithCustomToken(
-        auth,
-        result.data!.token
-      );
-      localStorage.setItem("token", result.data!.token);
-      console.log("User logged in successfully", auth.currentUser);
+      // const userCredential = await signInWithCustomToken(
+      //   auth,
+      //   result.data!.token
+      // );
+      //console.log("User logged in successfully", auth.currentUser);
     }
-    return result;
+    return new ApiResponse<OptCheckResponse>(null, true, "Success", 200);
   } catch (error: any) {
     const response: ApiResponse<OptCheckResponse> =
       new ApiResponse<OptCheckResponse>(null, false, error.message, 500);
@@ -72,17 +74,19 @@ export const RegisterUserCreatePassword = async (
   try {
     console.log("hello");
     console.log("auh", auth.currentUser);
-    const result = await httpsCallable(
-      firebaseFunction,
-      "CreatePasswordUser"
-    )({
-      password: password,
-    });
+    // const result = await httpsCallable(
+    //   firebaseFunction,
+    //   "CreatePasswordUser"
+    // )({
+    //   password: password,
+    // });
     const email = localStorage.getItem("email")!;
+    await createUserWithEmailAndPassword(auth, email, password);
     await signInWithEmailAndPassword(auth, email, password);
-    console.log(result);
+    //console.log(result);
     return new ApiResponse<string>("success", true, "Success", 200);
   } catch (error: any) {
+    console.log("error", error);
     const response: ApiResponse<string> = new ApiResponse<string>(
       null,
       false,
@@ -105,6 +109,7 @@ export const RegisterUserCreateDetail = async (
     await updateProfile(auth.currentUser, {
       displayName: displayName,
     });
+
   return true;
 };
 // Người dùng nhập thông tin tài khoản khi đăng sau khi đã nhập OTP
@@ -130,6 +135,7 @@ export const Login = async (email: string, password: string): Promise<any> => {
     return user;
   } catch (error: any) {
     // Log chi tiết mã lỗi và thông báo lỗi
+    alert("Sai tài khoản hoặc mật khẩu");
     console.error("Error signing in:");
     console.error(`Code: ${error.code}`);
     console.error(`Message: ${error.message}`);

@@ -33,5 +33,6 @@ module.exports = {
     "operator-linebreak": "off",
     "new-cap": "off",
     "object-curly-spacing": ["error", "always"], // Có khoảng trắng
+    "linebreak-style": "off",
   },
 };

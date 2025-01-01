@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as userController from "../controllers/userController";
+import * as userController from "../modules/users/controllers/userController";
 
 const router = Router();
 router.get("/", userController.GetAllUser);
