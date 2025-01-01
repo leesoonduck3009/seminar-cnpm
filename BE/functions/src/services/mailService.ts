@@ -4,14 +4,14 @@ dotenv.config;
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.APP_PASSWORD,
+    user: "taskly.noreply@gmail.com",
+    pass: "ofwb dhaz fgir beae",
   },
 });
 export const sendLoginEmail = async (email: string, url: string) => {
   try {
     await transporter.sendMail({
-      from: `"Taskly Support Team " <${process.env.EMAIL}>`,
+      from: `"Taskly Support Team " <taskly.noreply@gmail.com>`,
       to: email,
       subject: "Welcome to Taskly – Your Task Management Tool!",
       html: `<!DOCTYPE html>
