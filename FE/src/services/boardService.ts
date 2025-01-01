@@ -98,11 +98,12 @@ export class BoardService {
   static async getBoards(userId: string): Promise<Board[]> {
     try {
       const q = query(
-        this.boardsRef,
-        where("members", "array-contains", { id: userId })
+        this.boardsRef
+        // where("members", "array-contains", { id: userId })
       );
 
       const querySnapshot = await getDocs(q);
+      console.log("querySnapshot", querySnapshot);
       return querySnapshot.docs.map(convertToBoard);
     } catch (error) {
       console.error("Error fetching boards:", error);

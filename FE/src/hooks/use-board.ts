@@ -11,11 +11,14 @@ export const useBoards = () => {
 
   useEffect(() => {
     const fetchBoards = async () => {
-      if (!currentUser) return;
+      //   if (!currentUser) return;
 
       setIsLoading(true);
       try {
-        const fetchedBoards = await BoardService.getBoards(currentUser.uid);
+        const fetchedBoards = await BoardService.getBoards(
+          "bdfasdf3r323230932fda"
+        );
+        console.log("fetchedBoards" + fetchedBoards);
         setBoards(fetchedBoards);
       } catch (error) {
         toast({
