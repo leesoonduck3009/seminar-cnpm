@@ -22,7 +22,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY!);
 // Đảm bảo kiểu của serviceAccount là ServiceAccount
-
+console.log("serviceAccount", serviceAccount);
 app.use(cors({ origin: true }));
 exports.SendMailToUser = v2.https.onRequest(
   { cors: true },
