@@ -16,102 +16,104 @@ interface BoardState {
 
   setHydrated: (state: boolean) => void;
   setActiveBoard: (board: Board | null) => void;
-  setActiveBoardById: (boardId: number | null) => void;
+  setActiveBoardById: (boardId: string | null) => void;
+  setBoards: (boards: Board[]) => void;
+  setIsLoading: (state: boolean) => void;
 
   // Board Actions
   addBoard: (boardData: Partial<Board>) => Board;
-  updateBoard: (boardId: number, data: Partial<Board>) => void;
-  deleteBoard: (boardId: number) => void;
-  toggleBoardStar: (boardId: number) => void;
-  getBoardById: (boardId: number) => Board | undefined;
+  updateBoard: (boardId: string, data: Partial<Board>) => void;
+  deleteBoard: (boardId: string) => void;
+  toggleBoardStar: (boardId: string) => void;
+  getBoardById: (boardId: string) => Board | undefined;
   //   setActiveBoardById: (boardId: number | null) => void;
 
   // Column Actions
-  addColumn: (boardId: number, title: string) => void;
+  addColumn: (boardId: string, title: string) => void;
   updateColumn: (
-    boardId: number,
+    boardId: string,
     columnId: string,
     data: Partial<Column>
   ) => void;
-  deleteColumn: (boardId: number, columnId: string) => void;
+  deleteColumn: (boardId: string, columnId: string) => void;
   moveColumn: (
-    boardId: number,
+    boardId: string,
     sourceIndex: number,
     destinationIndex: number
   ) => void;
 
   // Card Actions
-  addCard: (boardId: number, columnId: string, cardData: Partial<Card>) => void;
+  addCard: (boardId: string, columnId: string, cardData: Partial<Card>) => void;
   updateCard: (
-    boardId: number,
+    boardId: string,
     columnId: string,
     cardId: string,
     data: Partial<Card>
   ) => void;
-  deleteCard: (boardId: number, columnId: string, cardId: string) => void;
+  deleteCard: (boardId: string, columnId: string, cardId: string) => void;
   moveCard: (
-    boardId: number,
+    boardId: string,
     sourceColumnId: string,
     destinationColumnId: string,
     sourceIndex: number,
     destinationIndex: number
   ) => void;
-  archiveCard: (boardId: number, columnId: string, cardId: string) => void;
-  restoreCard: (boardId: number, columnId: string, cardId: string) => void;
+  archiveCard: (boardId: string, columnId: string, cardId: string) => void;
+  restoreCard: (boardId: string, columnId: string, cardId: string) => void;
 
   // Member Actions
   inviteMember: (
-    boardId: number,
+    boardId: string,
     email: string,
     role: "admin" | "normal"
   ) => Promise<void>;
   updateMemberRole: (
-    boardId: number,
+    boardId: string,
     memberId: string,
     role: "admin" | "normal"
   ) => Promise<void>;
-  removeMember: (boardId: number, memberId: string) => Promise<void>;
+  removeMember: (boardId: string, memberId: string) => Promise<void>;
 
   // Card Member Actions
   addCardMember: (
-    boardId: number,
+    boardId: string,
     columnId: string,
     cardId: string,
     userId: string
   ) => void;
   removeCardMember: (
-    boardId: number,
+    boardId: string,
     columnId: string,
     cardId: string,
     userId: string
   ) => void;
 
   // Label Actions
-  addLabel: (boardId: number, label: { name: string; color: string }) => void;
+  addLabel: (boardId: string, label: { name: string; color: string }) => void;
   updateLabel: (
-    boardId: number,
+    boardId: string,
     labelId: string,
     data: { name?: string; color?: string }
   ) => void;
-  deleteLabel: (boardId: number, labelId: string) => void;
+  deleteLabel: (boardId: string, labelId: string) => void;
 
   // Comment Actions
   addComment: (
-    boardId: number,
+    boardId: string,
     columnId: string,
     cardId: string,
     content: string,
     author: User
   ) => void;
   updateComment: (
-    boardId: number,
+    boardId: string,
     columnId: string,
     cardId: string,
     commentId: string,
     content: string
   ) => void;
   deleteComment: (
-    boardId: number,
+    boardId: string,
     columnId: string,
     cardId: string,
     commentId: string
@@ -142,11 +144,15 @@ const useBoardStore = create<BoardState>()(
           set({ activeBoard: board || null });
         },
 
+        setBoards: (boards) => set({ boards }),
+
+        setIsLoading: (state) => set({ isLoading: state }),
+
         addBoard: (boardData) => {
           set({ isLoading: true, error: null });
           try {
             const newBoard: Board = {
-              id: Date.now(),
+              id: Date.now().toString(),
               title: boardData.title || "Untitled Board",
               visibility: "private",
               starred: false,
@@ -369,7 +375,7 @@ const useBoardStore = create<BoardState>()(
         },
 
         updateCard: (
-          boardId: number,
+          boardId: string,
           columnId: string,
           cardId: string,
           data: Partial<Card>
@@ -824,7 +830,7 @@ const useBoardStore = create<BoardState>()(
         },
 
         addComment: (
-          boardId: number,
+          boardId: string,
           columnId: string,
           cardId: string,
           content: string,
@@ -1077,7 +1083,7 @@ export const useHydrateStore = () => {
 };
 
 // Selector hooks for better performance
-export const useBoardById = (boardId: number) =>
+export const useBoardById = (boardId: string) =>
   useBoardStore((state) => state.boards.find((board) => board.id === boardId));
 
 export const useActiveBoard = () => useBoardStore((state) => state.activeBoard);

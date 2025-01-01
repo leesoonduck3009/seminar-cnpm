@@ -3,7 +3,7 @@ import { Column } from '@/types/column';
 import { BoardMember } from '@/types/user';
 
 export interface Board {
-  id: number;
+  id: string;
   title: string;
   description?: string;
   background?: string;

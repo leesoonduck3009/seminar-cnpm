@@ -18,7 +18,9 @@ import type { Board } from "@/types/board";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/helpers/firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc } from "firebase/firestore";
+import { useBoards } from "@/hooks/use-board";
+import { BoardService } from "@/services/boardService";
 
 const BoardsPage = () => {
   const router = useRouter();
@@ -28,23 +30,37 @@ const BoardsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "name">("recent");
   const { currentUser, loading } = useAuth();
+  const { allBoards } = useBoards();
 
-  React.useEffect(() => {
-    if (!currentUser) {
-      router.push("/login");
-    }
-  }, [currentUser, router]);
+  // React.useEffect(() => {
+  //   if (!currentUser) {
+  //     router.push("/login");
+  //   }
+  // }, [currentUser, router]);
   const handleCreateBoard = async (boardData: Partial<Board>) => {
     try {
-      // addBoard returns the new board immediately
-      const newBoard = addBoard(boardData);
-      // Wait for the next tick to ensure store is updated
-      await Promise.resolve();
+      // // addBoard returns the new board immediately
+      // const newBoard = addBoard(boardData);
+      // // Wait for the next tick to ensure store is updated
+      // await Promise.resolve();
+
+      // if (!currentUser) throw new Error("No user found");
+
+      const newAddBoard = await BoardService.createBoard(
+        boardData,
+        "bdfasdf3r323230932fda"
+      );
+
+      useBoardStore.getState().addBoard(newAddBoard);
+
       // Navigate to the new board
-      router.push(`/board/${newBoard.id}`);
+      router.push(`/board/${newAddBoard.id}`);
 
       // Return the new board to satisfy the type
-      return newBoard;
+
+      return newAddBoard;
+
+      // return newBoard;
     } catch (error) {
       toast({
         title: "Error",
@@ -55,7 +71,7 @@ const BoardsPage = () => {
     }
   };
 
-  const handleToggleStar = (boardId: number, e: React.MouseEvent) => {
+  const handleToggleStar = (boardId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const board = boards.find((b) => b.id === boardId);
