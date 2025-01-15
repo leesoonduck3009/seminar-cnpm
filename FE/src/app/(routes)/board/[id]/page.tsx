@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { PlusCircle } from "lucide-react";
@@ -105,15 +105,15 @@ const BoardDetailPage = () => {
         return;
       }
 
-      setActiveBoardById(boardId);
+      await setActiveBoardById(boardId);
     };
 
     initializeBoard();
 
     return () => {
-      setActiveBoardById(null);
+      console.log("cleanup");
     };
-  }, [hydrated, boardId, boards, router, setActiveBoardById, toast]);
+  }, [hydrated, boardId, boards]);
 
   // Background style handling
   const getBackgroundStyle = useCallback(() => {
@@ -253,7 +253,9 @@ const BoardDetailPage = () => {
   if (!board) {
     return <BoardNotFoundState onBack={() => router.push("/boards")} />;
   }
-
+  useEffect(() => {
+    console.log("activeBoard", activeBoard);
+  }, [activeBoard]);
   // Main render
   return loading ? (
     <div></div>
@@ -280,22 +282,23 @@ const BoardDetailPage = () => {
                     ref={provided.innerRef}
                     className="flex gap-4 items-start min-h-[calc(100%-1rem)]"
                   >
-                    {activeBoard.columns.map((column, index) => (
-                      <Column
-                        key={column.id}
-                        column={column}
-                        index={index}
-                        onAddCard={handleAddCard}
-                        onUpdateCard={handleUpdateCard}
-                        onDeleteCard={handleDeleteCard}
-                        onUpdateColumn={(columnId, title) =>
-                          updateColumn(boardId, columnId, { title })
-                        }
-                        onDeleteColumn={(columnId) =>
-                          deleteColumn(boardId, columnId)
-                        }
-                      />
-                    ))}
+                    {activeBoard &&
+                      activeBoard!.columns.map((column, index) => (
+                        <Column
+                          key={column.id}
+                          column={column}
+                          index={index}
+                          onAddCard={handleAddCard}
+                          onUpdateCard={handleUpdateCard}
+                          onDeleteCard={handleDeleteCard}
+                          onUpdateColumn={(columnId, title) =>
+                            updateColumn(boardId, columnId, { title })
+                          }
+                          onDeleteColumn={(columnId) =>
+                            deleteColumn(boardId, columnId)
+                          }
+                        />
+                      ))}
                     {provided.placeholder}
 
                     <div className="w-72 flex-shrink-0">

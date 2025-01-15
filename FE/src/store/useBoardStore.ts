@@ -1,4 +1,5 @@
 // store/useBoardStore.ts
+import { BoardService } from "@/services/boardService";
 import { CardService } from "@/services/cardService";
 import { ColumnService } from "@/services/columnService";
 import { Board } from "@/types/board";
@@ -136,13 +137,14 @@ const useBoardStore = create<BoardState>()(
 
         setActiveBoard: (board) => set({ activeBoard: board }),
 
-        setActiveBoardById: (boardId) => {
+        setActiveBoardById: async (boardId) => {
+          console.log("boardId", boardId);  
           if (!boardId) {
             set({ activeBoard: null });
             return;
           }
 
-          const board = get().boards.find((b) => b.id === boardId);
+          const board = await BoardService.getBoardById(boardId);
           set({ activeBoard: board || null });
         },
 
@@ -153,6 +155,7 @@ const useBoardStore = create<BoardState>()(
         addBoard: (boardData) => {
           set({ isLoading: true, error: null });
           try {
+            console.log("Hello");
             const newBoard: Board = {
               id: Date.now().toString(),
               title: boardData.title || "Untitled Board",
@@ -179,6 +182,7 @@ const useBoardStore = create<BoardState>()(
 
             return newBoard;
           } catch (error) {
+            console.error(error);
             set({ error: (error as Error).message, isLoading: false });
             throw error;
           }
@@ -232,6 +236,9 @@ const useBoardStore = create<BoardState>()(
             set({ isLoading: true, error: null });
 
             const newColumn = await ColumnService.createColumn(boardId, title);
+            const board = await BoardService.getBoardById(boardId);
+            board?.columns.push(newColumn);
+            await BoardService.updateBoard(board!);
 
             set((state) => ({
               boards: state.boards.map((board) =>
@@ -239,13 +246,7 @@ const useBoardStore = create<BoardState>()(
                   ? { ...board, columns: [...board.columns, newColumn] }
                   : board
               ),
-              activeBoard:
-                state.activeBoard?.id === boardId
-                  ? {
-                      ...state.activeBoard,
-                      columns: [...state.activeBoard.columns, newColumn],
-                    }
-                  : state.activeBoard,
+              activeBoard: board,
               isLoading: false,
             }));
 
@@ -265,7 +266,7 @@ const useBoardStore = create<BoardState>()(
             set({ isLoading: true, error: null });
 
             await ColumnService.updateColumn(boardId, columnId, data);
-
+            const board = await BoardService.getBoardById(boardId);
             set((state) => {
               const updateColumns = (columns: Column[]) =>
                 columns.map((column) =>
@@ -284,13 +285,7 @@ const useBoardStore = create<BoardState>()(
                     ? { ...board, columns: updateColumns(board.columns) }
                     : board
                 ),
-                activeBoard:
-                  state.activeBoard?.id === boardId
-                    ? {
-                        ...state.activeBoard,
-                        columns: updateColumns(state.activeBoard.columns),
-                      }
-                    : state.activeBoard,
+                activeBoard: board,
                 isLoading: false,
               };
             });
@@ -423,7 +418,6 @@ const useBoardStore = create<BoardState>()(
               columnId,
               cardData
             );
-
             set((state) => {
               const updateColumns = (columns: Column[]) =>
                 columns.map((column) =>

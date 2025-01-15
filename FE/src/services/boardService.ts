@@ -25,10 +25,8 @@ const convertToBoard = (
   return {
     ...data,
     id: doc.id,
-    createdAt:
-      data.createdAt?.toDate().toISOString() || new Date().toISOString(),
-    updatedAt:
-      data.updatedAt?.toDate().toISOString() || new Date().toISOString(),
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
     members:
       data.members?.map((member: BoardMember) => ({
         id: member.id,
@@ -94,13 +92,26 @@ export class BoardService {
       throw new Error("Failed to create board");
     }
   }
+  static async updateBoard(boardData: Partial<Board>): Promise<Board> {
+    try {
+      // Create initial board member
+      console.log("boardData", boardData.id);
+      // Prepare board data
+      const docRef = doc(this.boardsRef, boardData.id);
+      await setDoc(docRef, boardData);
+      return {
+        ...boardData,
+      } as Board;
+    } catch (error) {
+      console.error("Error creating board:", error);
+      throw new Error("Failed to create board");
+    }
+  }
 
   static async getBoards(userId: string): Promise<Board[]> {
     try {
-      const q = query(
-        this.boardsRef,
-        where("createBy", "==", auth.currentUser?.uid)
-      );
+      console.log("userId", userId);
+      const q = query(this.boardsRef, where("createdBy", "==", userId));
 
       const querySnapshot = await getDocs(q);
       console.log("querySnapshot", querySnapshot);

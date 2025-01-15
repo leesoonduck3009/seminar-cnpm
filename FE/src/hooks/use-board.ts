@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import useBoardStore from "@/store/useBoardStore";
 import { BoardService } from "@/services/boardService";
 import { useToast } from "@/hooks/use-toast";
+import { auth, firebaseFunction } from "@/helpers/firebase";
 
 export const useBoards = () => {
   const { currentUser } = useAuth();
@@ -16,7 +17,7 @@ export const useBoards = () => {
       setIsLoading(true);
       try {
         const fetchedBoards = await BoardService.getBoards(
-          "bdfasdf3r323230932fda"
+          auth.currentUser?.uid!
         );
         console.log("fetchedBoards" + fetchedBoards);
         setBoards(fetchedBoards);

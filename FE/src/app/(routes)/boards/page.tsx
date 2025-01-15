@@ -17,7 +17,7 @@ import useBoardStore from "@/store/useBoardStore";
 import type { Board } from "@/types/board";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/helpers/firebase";
+import { auth, db } from "@/helpers/firebase";
 import { addDoc } from "firebase/firestore";
 import { useBoards } from "@/hooks/use-board";
 import { BoardService } from "@/services/boardService";
@@ -25,13 +25,39 @@ import { BoardService } from "@/services/boardService";
 const BoardsPage = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { boards, addBoard, updateBoard } = useBoardStore();
+  const { boards, addBoard, updateBoard, setBoards, setIsLoading } =
+    useBoardStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "name">("recent");
   const { currentUser, loading } = useAuth();
   const { allBoards } = useBoards();
 
+  useEffect(() => {
+    const fetchBoards = async () => {
+      //   if (!currentUser) return;
+
+      setIsLoading(true);
+      try {
+        const fetchedBoards = await BoardService.getBoards(
+          auth.currentUser?.uid!
+        );
+        console.log("fetchedBoards" + fetchedBoards);
+        setBoards(fetchedBoards);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch boards",
+          variant: "destructive",
+        });
+        console.log("error", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBoards();
+  }, [currentUser]);
   // React.useEffect(() => {
   //   if (!currentUser) {
   //     router.push("/login");
@@ -48,7 +74,7 @@ const BoardsPage = () => {
 
       const newAddBoard = await BoardService.createBoard(
         boardData,
-        "bdfasdf3r323230932fda"
+        auth.currentUser?.uid!
       );
 
       useBoardStore.getState().addBoard(newAddBoard);

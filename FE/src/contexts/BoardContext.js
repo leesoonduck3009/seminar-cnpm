@@ -1,5 +1,6 @@
 "use client";
 import { Board } from "@/models/board";
+import { BoardService } from "@/services/boardService";
 import { createContext, useContext, useState } from "react";
 
 const BoardContext = createContext(null);
@@ -49,8 +50,8 @@ export const BoardProvider = ({ children }) => {
     return boards.find((board) => board.id === boardId);
   };
 
-  const setActiveBoardById = (boardId) => {
-    const board = getBoardById(boardId);
+  const setActiveBoardById = async (boardId) => {
+    const board = await BoardService.getBoardById(boardId);
     setActiveBoard(board);
   };
   const value = {
