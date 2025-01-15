@@ -138,7 +138,7 @@ const useBoardStore = create<BoardState>()(
         setActiveBoard: (board) => set({ activeBoard: board }),
 
         setActiveBoardById: async (boardId) => {
-          console.log("boardId", boardId);  
+          console.log("boardId", boardId);
           if (!boardId) {
             set({ activeBoard: null });
             return;
@@ -236,9 +236,9 @@ const useBoardStore = create<BoardState>()(
             set({ isLoading: true, error: null });
 
             const newColumn = await ColumnService.createColumn(boardId, title);
-            const board = await BoardService.getBoardById(boardId);
-            board?.columns.push(newColumn);
-            await BoardService.updateBoard(board!);
+            // const board = await BoardService.getBoardById(boardId);
+            // board?.columns.push(newColumn);
+            // await BoardService.updateBoard(board!);
 
             set((state) => ({
               boards: state.boards.map((board) =>
@@ -246,7 +246,13 @@ const useBoardStore = create<BoardState>()(
                   ? { ...board, columns: [...board.columns, newColumn] }
                   : board
               ),
-              activeBoard: board,
+              activeBoard:
+                state.activeBoard?.id === boardId
+                  ? {
+                      ...state.activeBoard,
+                      columns: [...state.activeBoard.columns, newColumn],
+                    }
+                  : state.activeBoard,
               isLoading: false,
             }));
 
@@ -285,7 +291,13 @@ const useBoardStore = create<BoardState>()(
                     ? { ...board, columns: updateColumns(board.columns) }
                     : board
                 ),
-                activeBoard: board,
+                activeBoard:
+                  state.activeBoard?.id === boardId
+                    ? {
+                        ...state.activeBoard,
+                        columns: updateColumns(state.activeBoard.columns),
+                      }
+                    : state.activeBoard,
                 isLoading: false,
               };
             });

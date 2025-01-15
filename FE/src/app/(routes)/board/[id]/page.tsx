@@ -17,6 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 import type { Card } from "@/types/card";
 import type { Board } from "@/types/board";
 import { useAuth } from "@/contexts/AuthContext";
+import { collection } from "firebase/firestore";
+import { db } from "@/helpers/firebase";
 
 const LoadingState = () => (
   <div className="min-h-screen bg-pink-100">
@@ -88,7 +90,6 @@ const BoardDetailPage = () => {
     deleteCard,
     moveCard,
   } = useBoardStore();
-
   // Effect to load and initialize board data
   React.useEffect(() => {
     const initializeBoard = async () => {
